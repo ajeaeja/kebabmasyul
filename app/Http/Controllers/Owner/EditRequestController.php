@@ -34,12 +34,14 @@ class EditRequestController extends Controller implements HasMiddleware
             $requests = EditRequest::with(['user', 'reviewer'])
                 ->orderBy('status', 'asc') // pending first
                 ->orderBy('id', 'desc')
-                ->get();
+                ->paginate(10)
+                ->withQueryString();
         } else {
             $requests = EditRequest::where('user_id', $user->id)
                 ->with(['reviewer'])
                 ->orderBy('id', 'desc')
-                ->get();
+                ->paginate(10)
+                ->withQueryString();
         }
 
         return view('owner.edit_requests.index', compact('requests'));

@@ -24,7 +24,7 @@ class RawMaterialController extends Controller implements HasMiddleware
      */
     public function index()
     {
-        $materials = RawMaterial::orderBy('name', 'asc')->get();
+        $materials = RawMaterial::orderBy('name', 'asc')->paginate(10)->withQueryString();
         return view('gudang.raw_materials.index', compact('materials'));
     }
 

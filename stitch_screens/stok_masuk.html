@@ -1,0 +1,447 @@
+<!DOCTYPE html><html class="light" lang="id"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Stok Masuk - Masyul Kebab Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ffb599",
+                        "on-secondary-container": "#616269",
+                        "on-primary-fixed-variant": "#8d1600",
+                        "surface-variant": "#d8e3fb",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#ffdbce",
+                        "outline-variant": "#e3beb6",
+                        "surface-container": "#e7eeff",
+                        "secondary-fixed-dim": "#c6c6cd",
+                        "inverse-on-surface": "#ecf1ff",
+                        "surface-dim": "#cfdaf2",
+                        "secondary-fixed": "#e2e2e9",
+                        "surface": "#f9f9ff",
+                        "primary-fixed-dim": "#ffb4a4",
+                        "on-background": "#111c2d",
+                        "primary": "#b22204",
+                        "inverse-primary": "#ffb4a4",
+                        "on-surface": "#111c2d",
+                        "surface-container-high": "#dee8ff",
+                        "outline": "#8f7069",
+                        "on-secondary-fixed": "#1a1b21",
+                        "inverse-surface": "#263143",
+                        "primary-container": "#d63c1e",
+                        "on-surface-variant": "#5b403b",
+                        "on-error": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#c74e13",
+                        "tertiary": "#a33900",
+                        "surface-tint": "#b62506",
+                        "secondary": "#5d5e64",
+                        "on-tertiary": "#ffffff",
+                        "surface-tint": "#b62506",
+                        "on-tertiary-fixed": "#370e00",
+                        "on-tertiary-container": "#fffbff",
+                        "surface-container-low": "#f0f3ff",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#ffdad3",
+                        "on-primary-fixed": "#3e0500",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#dfdfe6",
+                        "background": "#f9f9ff",
+                        "surface-container-highest": "#d8e3fb",
+                        "on-tertiary-fixed-variant": "#7f2b00",
+                        "surface-bright": "#f9f9ff",
+                        "on-secondary-fixed-variant": "#45474c",
+                        "on-primary-container": "#fffbff",
+                        "brand-accent": "#ee4d2d",
+                        "brand-accent-end": "#ff763b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter-width": "1.5rem",
+                        "container-margin": "2rem",
+                        "zoom-factor": "0.8",
+                        "card-padding": "1.5rem",
+                        "section-gap": "2rem"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "title-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "1.4", "fontWeight": "700"}],
+                        "title-md": ["16px", {"lineHeight": "1.5", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            zoom: 0.8;
+            background-color: #f8f9fa;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .btn-accent {
+            background: linear-gradient(135deg, #ee4d2d 0%, #ff763b 100%);
+            transition: all 0.2s ease;
+        }
+        .btn-accent:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(238, 77, 45, 0.3);
+        }
+        .card-custom {
+            background: white;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            border-radius: 1rem;
+        }
+        .table-row-hover:hover {
+            background-color: #f1f5f9;
+        }
+        .badge-pill-custom {
+            background-color: rgba(93, 94, 100, 0.1);
+            color: #5d5e64;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: lowercase;
+        }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- SideNavBar (Shared Component) -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-on-background flex flex-col py-6 border-r border-outline-variant shadow-lg z-50">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">restaurant_menu</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-white tracking-tight">Masyul Kebab</h1>
+<p class="text-secondary-fixed-dim text-[10px] uppercase tracking-widest font-bold">Management Portal</p>
+</div>
+</div>
+<nav class="flex-1 px-2 space-y-1 overflow-y-auto scrollbar-hide">
+<div class="text-[10px] px-4 py-2 text-secondary-fixed-dim font-bold uppercase tracking-widest opacity-50">General</div>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed mx-2 my-1 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<div class="text-[10px] px-4 py-2 mt-4 text-secondary-fixed-dim font-bold uppercase tracking-widest opacity-50">Kemitraan &amp; Cabang</div>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed mx-2 my-1 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-body-md text-body-md">Data Mitra</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed mx-2 my-1 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">store</span>
+<span class="font-body-md text-body-md">Data Cabang</span>
+</a>
+<div class="text-[10px] px-4 py-2 mt-4 text-secondary-fixed-dim font-bold uppercase tracking-widest opacity-50">Operasional</div>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed mx-2 my-1 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-body-md text-body-md">Stok Bahan Baku</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-white rounded-lg mx-2 my-1 shadow-md scale-95 transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">input</span>
+<span class="font-body-md text-body-md">Stok Masuk</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed mx-2 my-1 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-body-md text-body-md">Pesanan Mitra</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed mx-2 my-1 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-md text-body-md">Laporan Omset</span>
+</a>
+<div class="text-[10px] px-4 py-2 mt-4 text-secondary-fixed-dim font-bold uppercase tracking-widest opacity-50">Persetujuan</div>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed mx-2 my-1 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">fact_check</span>
+<span class="font-body-md text-body-md">Edit Approval</span>
+<span class="ml-auto bg-white/20 px-2 py-0.5 rounded text-[10px] font-bold">1</span>
+</a>
+</nav>
+<div class="mt-auto px-4 py-4 border-t border-outline-variant/20">
+<a class="flex items-center gap-3 px-4 py-2 text-secondary-fixed-dim hover:bg-red-900/20 hover:text-red-400 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">Keluar / Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<main class="md:pl-[280px] min-h-screen">
+<!-- TopNavBar (Shared Component) -->
+<header class="flex justify-between items-center w-full px-8 py-4 bg-white sticky top-0 z-40 border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors md:hidden">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight">Riwayat Stok Masuk Supplier</h2>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/60">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full w-64 focus:ring-2 focus:ring-primary/20 text-body-md transition-all" placeholder="Cari transaksi..." type="text">
+</div>
+<div class="flex items-center gap-4 border-l border-outline-variant pl-6">
+<button class="relative p-2 hover:bg-surface-container rounded-full transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full border-2 border-white"></span>
+</button>
+<div class="flex items-center gap-3 cursor-pointer group">
+<div class="text-right hidden sm:block">
+<p class="font-title-md text-title-md text-on-surface">Masyul Owner</p>
+<p class="text-[11px] text-on-surface-variant uppercase font-bold tracking-tighter">Super Admin</p>
+</div>
+<img alt="Manager Avatar" class="w-10 h-10 rounded-full border-2 border-primary-fixed-dim bg-surface-container-high p-0.5 group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9ZAH9J77vlX-oWBElu4CHWZO47HsnzJskwJd2Tnsb4a2mSVBcP7KFR4Ba3-JFeEmDN3Tq8EsI68RLJpTnhTr-J45k9f-ize5T2CA8ET82j6nMnewp4aRNX_bzMXha-2HX3Ga5t8Km0ixfcuM8dsPvycjKwAVH2NiQdJf-BZRNGBpsq5nj2DakQgJrEkIhKVvjmJ-LMTo3Zum4qcZOJMy0yEqCN0-8ARBc0SBR75mx0jqQnEN8P2iKZ9gy1lWPQB-pEM3n42wsrjQ">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-y-0.5 transition-transform">expand_more</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Canvas Content -->
+<div class="p-8 space-y-8">
+<!-- Breadcrumbs / Quick Stats -->
+<div class="flex items-center justify-between">
+<nav class="flex text-on-surface-variant/60 font-label-sm text-label-sm items-center gap-2">
+<a class="hover:text-primary transition-colors" href="#">Operasional</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface font-semibold">Stok Masuk</span>
+</nav>
+</div>
+<!-- Main Table Section -->
+<section class="card-custom overflow-hidden">
+<div class="p-6 border-b border-outline-variant/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Daftar Pengadaan Bahan Baku</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Log transaksi penerimaan pasokan bahan baku yang masuk ke dalam gudang.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-outline text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">file_download</span>
+                            Export Data
+                        </button>
+<button class="btn-accent flex items-center gap-2 px-6 py-2.5 rounded-lg text-white font-label-sm text-label-sm font-bold shadow-lg">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                            Tambah Pengadaan
+                        </button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant/50">
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">SKU</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Nama Bahan Baku</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Kuantitas Masuk</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Satuan</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Tanggal Masuk</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Catatan Pengadaan</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider text-right">Aksi</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20">
+<!-- Row 1 -->
+<tr class="table-row-hover transition-colors">
+<td class="px-6 py-5">
+<span class="font-label-sm text-label-sm text-primary font-bold">BB003</span>
+</td>
+<td class="px-6 py-5">
+<p class="font-title-md text-title-md text-on-surface">Saus Sambal</p>
+</td>
+<td class="px-6 py-5">
+<span class="font-headline-sm text-headline-sm text-emerald-600">+20</span>
+</td>
+<td class="px-6 py-5">
+<span class="badge-pill-custom">dirigen</span>
+</td>
+<td class="px-6 py-5 font-body-md text-body-md text-on-surface-variant">
+                                    20-05-2026
+                                </td>
+<td class="px-6 py-5 font-body-md text-body-md text-on-surface-variant italic">
+                                    Restock saus sambal
+                                </td>
+<td class="px-6 py-5 text-right">
+<button class="p-2 text-primary hover:bg-primary-fixed-dim/30 rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="edit_square">edit_square</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="table-row-hover transition-colors">
+<td class="px-6 py-5">
+<span class="font-label-sm text-label-sm text-primary font-bold">BB002</span>
+</td>
+<td class="px-6 py-5">
+<p class="font-title-md text-title-md text-on-surface">Daging Sapi Kebab</p>
+</td>
+<td class="px-6 py-5">
+<span class="font-headline-sm text-headline-sm text-emerald-600">+10</span>
+</td>
+<td class="px-6 py-5">
+<span class="badge-pill-custom">tiang</span>
+</td>
+<td class="px-6 py-5 font-body-md text-body-md text-on-surface-variant">
+                                    12-05-2026
+                                </td>
+<td class="px-6 py-5 font-body-md text-body-md text-on-surface-variant">
+                                    Pengadaan daging sapi dari Rumah Potong Rapi
+                                </td>
+<td class="px-6 py-5 text-right">
+<button class="p-2 text-primary hover:bg-primary-fixed-dim/30 rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="edit_square">edit_square</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="table-row-hover transition-colors">
+<td class="px-6 py-5">
+<span class="font-label-sm text-label-sm text-primary font-bold">BB001</span>
+</td>
+<td class="px-6 py-5">
+<p class="font-title-md text-title-md text-on-surface">Tortilla Kebab Besar</p>
+</td>
+<td class="px-6 py-5">
+<span class="font-headline-sm text-headline-sm text-emerald-600">+100</span>
+</td>
+<td class="px-6 py-5">
+<span class="badge-pill-custom">pack</span>
+</td>
+<td class="px-6 py-5 font-body-md text-body-md text-on-surface-variant">
+                                    10-05-2026
+                                </td>
+<td class="px-6 py-5 font-body-md text-body-md text-on-surface-variant">
+                                    Pengadaan rutin awal bulan supplier Tortilla Jaya
+                                </td>
+<td class="px-6 py-5 text-right">
+<button class="p-2 text-primary hover:bg-primary-fixed-dim/30 rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="edit_square">edit_square</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Placeholder -->
+<div class="px-6 py-4 bg-surface-container-lowest flex items-center justify-between border-t border-outline-variant/30">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Menampilkan 1-3 dari 3 transaksi</p>
+<div class="flex gap-2">
+<button class="p-2 rounded border border-outline-variant disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center bg-primary text-white rounded font-bold text-xs">1</button>
+<button class="p-2 rounded border border-outline-variant disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Supplemental Info Section (Bento Grid Style) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Insight Card 1 -->
+<div class="card-custom p-6 flex items-center gap-5 border-l-4 border-emerald-500">
+<div class="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+<span class="material-symbols-outlined text-[32px]">trending_up</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Peningkatan Stok</p>
+<h4 class="font-headline-md text-headline-md text-on-surface">+130 Satuan</h4>
+<p class="text-[12px] text-on-surface-variant/70 mt-1">Total masuk bulan Mei 2026</p>
+</div>
+</div>
+<!-- Insight Card 2 -->
+<div class="card-custom p-6 flex items-center gap-5 border-l-4 border-primary">
+<div class="w-14 h-14 rounded-full bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[32px]">local_shipping</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Supplier Utama</p>
+<h4 class="font-headline-md text-headline-md text-on-surface">3 Rekanan</h4>
+<p class="text-[12px] text-on-surface-variant/70 mt-1">Rumah Potong, Tortilla Jaya, etc.</p>
+</div>
+</div>
+<!-- Image / Promo Content -->
+<div class="card-custom relative overflow-hidden group min-h-[140px]">
+<img alt="Quality Ingredients" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A professional, close-up photograph of high-quality fresh ingredients used in food production. The image features vibrant colors of fresh vegetables and raw culinary materials arranged aesthetically on a clean, industrial stainless steel surface. The lighting is bright and crisp, emphasizing textures and freshness, fitting the energetic and professional brand personality of the Masyul Kebab portal. The shallow depth of field keeps the focus on the quality of the raw materials." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeMTSaQq1bArzcTuhJQJUPgfJXjKGZXiaGPzfX645ED4BvFG0lItWaTjuqgY-L3kZUIwhZ4OG_5s4l6i0EjnGJY67HYRU7gJVFJzlDuyFFOQzjuPmRJH3twAvOCwqWYlIJiACXV7j6oaMsYM1KwcoA7yqMSfn-75puTsX99niYYb9V3LbUjfhH6RZP3qWetAaIWN50heFG9vbajc9zMUhANrlqVSDm7UAa3mGEsY8gV699HD1zYVR19HhprHST4MQhTde8MKhHeAo">
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-6 flex flex-col justify-end">
+<h5 class="text-white font-headline-sm text-headline-sm leading-tight">Kontrol Kualitas Bahan Baku</h5>
+<p class="text-white/80 font-body-md text-body-md mt-1">Pastikan setiap barang masuk sesuai standar kualitas SOP.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="p-8 mt-4 border-t border-outline-variant/30 text-on-surface-variant flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="font-body-md text-body-md">© 2026 Masyul Kebab Franchise Management. All rights reserved.</p>
+<div class="flex gap-6 font-label-sm text-label-sm font-bold uppercase tracking-widest">
+<a class="hover:text-primary transition-colors" href="#">Bantuan</a>
+<a class="hover:text-primary transition-colors" href="#">Kebijakan Privasi</a>
+<a class="hover:text-primary transition-colors" href="#">Log Sistem</a>
+</div>
+</footer>
+</main>
+<!-- Floating Mobile Add Action -->
+<button class="md:hidden fixed bottom-6 right-6 w-14 h-14 btn-accent rounded-full text-white shadow-2xl flex items-center justify-center z-50">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+<!-- BottomNavBar (Mobile Only Shared Component Placeholder) -->
+<nav class="fixed bottom-0 left-0 w-full z-40 flex justify-around items-center px-4 py-2 pb-safe bg-surface shadow-[0_-4px_10px_rgba(0,0,0,0.05)] md:hidden">
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-sm text-label-sm">Stok</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1">
+<span class="material-symbols-outlined">input</span>
+<span class="font-label-sm text-label-sm">Masuk</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">verified_user</span>
+<span class="font-label-sm text-label-sm">Approval</span>
+</div>
+</nav>
+<script>
+        // Simple Interaction: Row highlight and feedback
+        document.querySelectorAll('.table-row-hover').forEach(row => {
+            row.addEventListener('click', () => {
+                console.log('Row details opened for item: ' + row.querySelector('.font-title-md').innerText);
+            });
+        });
+    </script>
+
+
+</body></html>

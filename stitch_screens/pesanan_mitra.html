@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+
+<html class="light" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pesanan Mitra - Masyul Kebab Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ffb599",
+                        "primary": "#b22204",
+                        "on-tertiary-fixed-variant": "#7f2b00",
+                        "secondary": "#5d5e64",
+                        "outline": "#8f7069",
+                        "on-primary-container": "#fffbff",
+                        "secondary-fixed": "#e2e2e9",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#ffdad3",
+                        "tertiary-container": "#c74e13",
+                        "on-background": "#111c2d",
+                        "secondary-fixed-dim": "#c6c6cd",
+                        "inverse-primary": "#ffb4a4",
+                        "tertiary": "#a33900",
+                        "on-tertiary-fixed": "#370e00",
+                        "surface-container": "#e7eeff",
+                        "on-primary-fixed": "#3e0500",
+                        "error-container": "#ffdad6",
+                        "background": "#f9f9ff",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#45474c",
+                        "inverse-on-surface": "#ecf1ff",
+                        "on-surface-variant": "#5b403b",
+                        "primary-container": "#d63c1e",
+                        "surface": "#f9f9ff",
+                        "outline-variant": "#e3beb6",
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdbce",
+                        "surface-dim": "#cfdaf2",
+                        "on-secondary-fixed": "#1a1b21",
+                        "surface-container-highest": "#d8e3fb",
+                        "surface-bright": "#f9f9ff",
+                        "surface-container-low": "#f0f3ff",
+                        "inverse-surface": "#263143",
+                        "secondary-container": "#dfdfe6",
+                        "surface-container-high": "#dee8ff",
+                        "on-surface": "#111c2d",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#8d1600",
+                        "on-secondary-container": "#616269",
+                        "surface-variant": "#d8e3fb",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#b62506",
+                        "primary-fixed-dim": "#ffb4a4",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#fffbff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-margin": "2rem",
+                        "card-padding": "1.5rem",
+                        "zoom-factor": "0.8",
+                        "section-gap": "2rem",
+                        "gutter-width": "1.5rem"
+                    },
+                    "fontFamily": {
+                        "title-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "title-md": ["16px", {"lineHeight": "1.5", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "1.4", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #f8f9fa;
+            zoom: 0.8;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .card-custom {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            transition: transform 0.3s ease;
+        }
+        .card-custom:hover {
+            transform: translateY(-5px);
+        }
+        .btn-accent {
+            background: linear-gradient(135deg, #ee4d2d 0%, #ff763b 100%);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-accent:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(238, 77, 45, 0.3);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .status-badge {
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e2e9;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-on-background flex flex-col py-6 border-r border-outline-variant shadow-lg z-50">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-white leading-tight">Masyul Kebab</h1>
+<p class="text-secondary-fixed-dim text-[11px] uppercase tracking-widest font-semibold">Management Portal</p>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto px-4 custom-scrollbar space-y-1">
+<p class="px-4 text-[10px] font-bold text-outline-variant uppercase tracking-widest mb-2 opacity-50">Main Menu</p>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<p class="px-4 text-[10px] font-bold text-outline-variant uppercase tracking-widest mt-6 mb-2 opacity-50">Kemitraan &amp; Cabang</p>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">groups</span>
+<span class="font-body-md text-body-md">Data Mitra</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">store</span>
+<span class="font-body-md text-body-md">Data Cabang</span>
+</a>
+<p class="px-4 text-[10px] font-bold text-outline-variant uppercase tracking-widest mt-6 mb-2 opacity-50">Operasional</p>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">inventory_2</span>
+<span class="font-body-md text-body-md">Stok Bahan Baku</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">input</span>
+<span class="font-body-md text-body-md">Stok Masuk</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-white rounded-lg mx-0 my-1 group shadow-md shadow-primary/20" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+<span class="font-body-md text-body-md font-semibold">Pesanan Mitra</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">analytics</span>
+<span class="font-body-md text-body-md">Laporan Omset</span>
+</a>
+<p class="px-4 text-[10px] font-bold text-outline-variant uppercase tracking-widest mt-6 mb-2 opacity-50">Persetujuan</p>
+<a class="flex items-center justify-between px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed rounded-lg transition-colors group" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">fact_check</span>
+<span class="font-body-md text-body-md">Edit Approval</span>
+</div>
+<span class="bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-bold">1</span>
+</a>
+</nav>
+<div class="px-4 pt-6 mt-6 border-t border-white/10 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-secondary-fixed-dim hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-sm">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-secondary-fixed-dim hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span class="text-sm">Support</span>
+</a>
+<button class="w-full mt-4 flex items-center gap-3 px-4 py-3 text-error bg-error/10 rounded-lg hover:bg-error hover:text-white transition-all scale-95 active:scale-90">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-semibold text-sm">Keluar / Logout</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-[280px] min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-[280px] h-16 bg-surface flex items-center justify-between px-gutter-width border-b border-outline-variant z-40">
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">arrow_back</span>
+</button>
+<h2 class="font-title-md text-title-md text-primary">Kelola Pesanan Bahan Baku</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">notifications</span>
+<span class="absolute -top-1 -right-1 bg-primary text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full border-2 border-surface">2</span>
+</div>
+<div class="h-8 w-px bg-outline-variant"></div>
+<div class="flex items-center gap-3 cursor-pointer group">
+<div class="text-right">
+<p class="text-sm font-bold text-on-surface leading-none">Masyul Owner</p>
+<p class="text-[11px] text-on-surface-variant leading-none mt-1">Super Admin</p>
+</div>
+<img alt="Owner Avatar" class="w-10 h-10 rounded-full border-2 border-primary/20 group-hover:border-primary transition-colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbO90V4AVkc3C7UYD5IcN8xP_FymDWQJkRXuUIloAOgFjMJQGAMOeeDu2Z6hoZKWuVY00kyngCJXjsa5vNMOLC5MfO5Ru05eDZkeudYPA8EdClOUQWnLH5H9PypIRJPRrDNqyY667gGbyAOmUzc5OAFQB2xmwFjgQPuhUkNwGcefavPTlF34ocq4HBBbKFaWpfRdvLBomtNeSVW44mbsZ-h-_XgkZJL3QvObLPS6lvWnaNVU1XI7zpkQoi54u-ArKz_eHmpQ_BL88"/>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">expand_more</span>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="pt-24 px-gutter-width pb-12 space-y-8">
+<!-- Filter Section -->
+<section class="card-custom p-6">
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+<div class="space-y-1.5">
+<label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider px-1">Cari Pesanan</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-2.5 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm outline-none" placeholder="ID / Nama Mitra..." type="text"/>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider px-1">Pilih Mitra</label>
+<select class="w-full px-4 py-2.5 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm outline-none">
+<option>-- Semua Mitra --</option>
+<option>Mitra Kebab Margonda</option>
+<option>Mitra Kebab Depok</option>
+</select>
+</div>
+<div class="space-y-1.5">
+<label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider px-1">Status Proses</label>
+<select class="w-full px-4 py-2.5 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm outline-none">
+<option>-- Semua Status --</option>
+<option>Menunggu Dipacking</option>
+<option>Dikirim</option>
+<option>Selesai</option>
+</select>
+</div>
+<div class="space-y-1.5">
+<label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider px-1">Status Pembayaran</label>
+<select class="w-full px-4 py-2.5 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm outline-none">
+<option>-- Semua Status --</option>
+<option>Lunas</option>
+<option>Belum Lunas</option>
+</select>
+</div>
+<div class="space-y-1.5">
+<label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider px-1">Periode Tanggal</label>
+<select class="w-full px-4 py-2.5 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm outline-none">
+<option>Semua Waktu</option>
+<option>Hari Ini</option>
+<option>Minggu Ini</option>
+<option>Bulan Mei 2026</option>
+</select>
+</div>
+</div>
+<div class="flex justify-end gap-3 mt-6 pt-6 border-t border-outline-variant/30">
+<button class="px-6 py-2.5 rounded-lg border border-outline-variant text-on-surface-variant font-semibold text-sm hover:bg-surface-container transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+                        Reset
+                    </button>
+<button class="btn-accent px-10 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                        Filter Data
+                    </button>
+</div>
+</section>
+<!-- Chart Section (Bento Style) -->
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+<div class="lg:col-span-3 card-custom p-6">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-lg">trending_up</span>
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Grafik Tren Pembelian</h3>
+<p class="text-xs text-on-surface-variant">Nominal pembelian bahan baku oleh mitra (IDR)</p>
+</div>
+</div>
+<div class="flex items-center gap-2 text-[10px] font-bold text-on-surface-variant">
+<span class="w-3 h-1 bg-primary rounded-full"></span>
+                            NOMINAL PEMBELIAN
+                        </div>
+</div>
+<div class="relative h-[250px] w-full flex items-end justify-between px-2">
+<!-- Simplified Visual Chart using Divs/CSS -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-10">
+<div class="border-b border-on-surface w-full h-0"></div>
+<div class="border-b border-on-surface w-full h-0"></div>
+<div class="border-b border-on-surface w-full h-0"></div>
+<div class="border-b border-on-surface w-full h-0"></div>
+<div class="border-b border-on-surface w-full h-0"></div>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2">
+<div class="w-full flex items-end justify-center group h-full">
+<div class="w-1.5 h-[5%] bg-outline-variant/30 rounded-t-full transition-all group-hover:bg-primary group-hover:h-[8%]"></div>
+</div>
+<span class="text-[10px] font-bold text-outline uppercase tracking-tighter">Jan</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2">
+<div class="w-full flex items-end justify-center group h-full">
+<div class="w-1.5 h-[5%] bg-outline-variant/30 rounded-t-full transition-all group-hover:bg-primary group-hover:h-[8%]"></div>
+</div>
+<span class="text-[10px] font-bold text-outline uppercase tracking-tighter">Feb</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2">
+<div class="w-full flex items-end justify-center group h-full relative">
+<div class="w-1.5 h-[15%] bg-outline-variant/30 rounded-t-full transition-all group-hover:bg-primary group-hover:h-[20%]"></div>
+</div>
+<span class="text-[10px] font-bold text-outline uppercase tracking-tighter">Mar</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2">
+<div class="w-full flex items-end justify-center group h-full">
+<div class="w-1.5 h-[40%] bg-primary/40 rounded-t-full transition-all group-hover:bg-primary group-hover:h-[45%]"></div>
+</div>
+<span class="text-[10px] font-bold text-outline uppercase tracking-tighter">Apr</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2">
+<div class="w-full flex items-end justify-center group h-full relative">
+<div class="w-1.5 h-[85%] bg-primary rounded-t-full shadow-lg shadow-primary/30 transition-all group-hover:h-[90%]"></div>
+<div class="absolute bottom-[85%] bg-primary text-white text-[10px] px-2 py-1 rounded font-bold mb-2">Rp 2.1jt</div>
+</div>
+<span class="text-[10px] font-bold text-primary uppercase tracking-tighter">Mei</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2">
+<div class="w-full flex items-end justify-center group h-full">
+<div class="w-1.5 h-[50%] bg-primary/60 rounded-t-full transition-all group-hover:bg-primary group-hover:h-[55%]"></div>
+</div>
+<span class="text-[10px] font-bold text-outline uppercase tracking-tighter">Jun</span>
+</div>
+</div>
+</div>
+<div class="card-custom bg-on-background p-6 flex flex-col justify-between overflow-hidden relative">
+<div class="relative z-10">
+<p class="text-secondary-fixed-dim text-[11px] font-bold uppercase tracking-widest mb-1">Total Pesanan Bulan Ini</p>
+<h4 class="text-white text-4xl font-extrabold tracking-tight">Rp 42,5jt</h4>
+<div class="mt-4 flex items-center gap-2">
+<span class="flex items-center text-green-400 text-xs font-bold">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+                                +12.5%
+                            </span>
+<span class="text-secondary-fixed-dim text-[10px]">v.s. Bulan Lalu</span>
+</div>
+</div>
+<div class="mt-8 space-y-4 relative z-10">
+<div class="bg-white/5 rounded-lg p-3 border border-white/10">
+<p class="text-white/60 text-[10px] font-bold uppercase">Pesanan Terbanyak</p>
+<p class="text-white text-sm font-semibold">Margonda Branch</p>
+</div>
+<button class="w-full py-3 bg-white text-on-background rounded-lg font-bold text-xs hover:bg-primary hover:text-white transition-all">Lihat Laporan Detail</button>
+</div>
+<div class="absolute -right-4 -bottom-4 w-32 h-32 bg-primary/20 blur-3xl rounded-full"></div>
+</div>
+</div>
+<!-- Table Section -->
+<section class="card-custom overflow-hidden">
+<div class="p-6 border-b border-outline-variant flex items-center justify-between">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Daftar Pesanan Bahan Baku Mitra</h3>
+<p class="text-body-md text-on-surface-variant">Mencatat pembelian bahan baku bulanan/mingguan dari mitra eksternal.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 bg-surface-container rounded-lg text-on-surface-variant text-sm font-bold flex items-center gap-2 hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-[20px]">download</span>
+                            Export Data
+                        </button>
+<button class="btn-accent px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                            Buat Pesanan Baru
+                        </button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant border-b border-outline-variant">
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider">No Pesanan</th>
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider">Nama Mitra</th>
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider">Tanggal Pesan</th>
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider">Target Kirim</th>
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-center">Item</th>
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider">Status Bayar</th>
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider">Total Tagihan</th>
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider">Status Sekarang</th>
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-center">Aksi</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<tr class="hover:bg-background transition-colors group">
+<td class="px-6 py-5">
+<span class="font-bold text-on-surface">#4</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Mitra Kebab Margonda</span>
+<span class="text-[10px] text-on-surface-variant font-medium">Margonda, Depok</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-sm text-on-surface">03-06-2026</span>
+</td>
+<td class="px-6 py-5">
+<span class="text-sm font-medium text-primary">05-06-2026</span>
+</td>
+<td class="px-6 py-5 text-center">
+<span class="px-2 py-1 bg-surface-container rounded text-xs font-bold">2 Item</span>
+</td>
+<td class="px-6 py-5">
+<span class="status-badge bg-error/10 text-error">Belum Lunas</span>
+</td>
+<td class="px-6 py-5">
+<span class="font-bold text-on-surface">Rp 370.000</span>
+</td>
+<td class="px-6 py-5">
+<span class="flex items-center gap-2 text-on-surface-variant text-xs font-semibold px-3 py-1 bg-surface-container rounded-full w-fit">
+<span class="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></span>
+                                        Menunggu Dipacking
+                                    </span>
+</td>
+<td class="px-6 py-5">
+<div class="flex justify-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant hover:border-primary hover:text-primary transition-all">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant hover:border-blue-500 hover:text-blue-500 transition-all">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-background transition-colors group">
+<td class="px-6 py-5">
+<span class="font-bold text-on-surface">#3</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Mitra Kebab Depok</span>
+<span class="text-[10px] text-on-surface-variant font-medium">Beji, Depok</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-sm text-on-surface">01-06-2026</span>
+</td>
+<td class="px-6 py-5">
+<span class="text-sm font-medium text-on-surface-variant">02-06-2026</span>
+</td>
+<td class="px-6 py-5 text-center">
+<span class="px-2 py-1 bg-surface-container rounded text-xs font-bold">5 Item</span>
+</td>
+<td class="px-6 py-5">
+<span class="status-badge bg-green-100 text-green-700">Lunas</span>
+</td>
+<td class="px-6 py-5">
+<span class="font-bold text-on-surface">Rp 1.250.000</span>
+</td>
+<td class="px-6 py-5">
+<span class="flex items-center gap-2 text-green-700 text-xs font-semibold px-3 py-1 bg-green-50 rounded-full w-fit">
+<span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                                        Selesai Diterima
+                                    </span>
+</td>
+<td class="px-6 py-5">
+<div class="flex justify-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant hover:border-primary hover:text-primary transition-all">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant hover:border-blue-500 hover:text-blue-500 transition-all opacity-50 cursor-not-allowed">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-6 bg-surface-container-lowest border-t border-outline-variant flex items-center justify-between">
+<p class="text-xs text-on-surface-variant">Menampilkan <span class="font-bold text-on-surface">1 - 2</span> dari <span class="font-bold text-on-surface">12</span> pesanan</p>
+<div class="flex items-center gap-1">
+<button class="p-2 rounded-lg hover:bg-surface-container transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-primary text-white font-bold text-sm">1</button>
+<button class="w-8 h-8 rounded-lg hover:bg-surface-container text-on-surface text-sm transition-colors">2</button>
+<button class="w-8 h-8 rounded-lg hover:bg-surface-container text-on-surface text-sm transition-colors">3</button>
+<button class="p-2 rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Success Modal Notification (Visual enhancement) -->
+<div class="fixed bottom-10 right-10 z-[100] transform translate-y-20 opacity-0 transition-all duration-500" id="successToast">
+<div class="bg-on-background text-white p-4 rounded-xl shadow-2xl flex items-center gap-4 border border-white/10">
+<div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-white">check</span>
+</div>
+<div>
+<p class="font-bold text-sm">Data Berhasil Diperbarui</p>
+<p class="text-xs text-white/60">Sistem telah mensinkronisasi database pesanan.</p>
+</div>
+<button class="ml-4 hover:bg-white/10 p-1 rounded" onclick="hideToast()">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<script>
+        function showToast() {
+            const toast = document.getElementById('successToast');
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(hideToast, 4000);
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('successToast');
+            toast.classList.add('translate-y-20', 'opacity-0');
+            toast.classList.remove('translate-y-0', 'opacity-100');
+        }
+
+        // Simulating some dynamic behavior
+        document.querySelector('.btn-accent').addEventListener('click', () => {
+            showToast();
+        });
+    </script>
+</body></html>

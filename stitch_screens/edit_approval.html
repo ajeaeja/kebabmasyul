@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+
+<html class="light" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Persetujuan Edit Data - Masyul Kebab</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ffb599",
+                        "primary": "#b22204",
+                        "on-tertiary-fixed-variant": "#7f2b00",
+                        "secondary": "#5d5e64",
+                        "outline": "#8f7069",
+                        "on-primary-container": "#fffbff",
+                        "secondary-fixed": "#e2e2e9",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#ffdad3",
+                        "tertiary-container": "#c74e13",
+                        "on-background": "#111c2d",
+                        "secondary-fixed-dim": "#c6c6cd",
+                        "inverse-primary": "#ffb4a4",
+                        "tertiary": "#a33900",
+                        "on-tertiary-fixed": "#370e00",
+                        "surface-container": "#e7eeff",
+                        "on-primary-fixed": "#3e0500",
+                        "error-container": "#ffdad6",
+                        "background": "#f9f9ff",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#45474c",
+                        "inverse-on-surface": "#ecf1ff",
+                        "on-surface-variant": "#5b403b",
+                        "primary-container": "#d63c1e",
+                        "surface": "#f9f9ff",
+                        "outline-variant": "#e3beb6",
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdbce",
+                        "surface-dim": "#cfdaf2",
+                        "on-secondary-fixed": "#1a1b21",
+                        "surface-container-highest": "#d8e3fb",
+                        "surface-bright": "#f9f9ff",
+                        "surface-container-low": "#f0f3ff",
+                        "inverse-surface": "#263143",
+                        "secondary-container": "#dfdfe6",
+                        "surface-container-high": "#dee8ff",
+                        "on-surface": "#111c2d",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#8d1600",
+                        "on-secondary-container": "#616269",
+                        "surface-variant": "#d8e3fb",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#b62506",
+                        "primary-fixed-dim": "#ffb4a4",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#fffbff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-margin": "2rem",
+                        "card-padding": "1.5rem",
+                        "zoom-factor": "0.8",
+                        "section-gap": "2rem",
+                        "gutter-width": "1.5rem"
+                    },
+                    "fontFamily": {
+                        "title-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "title-md": ["16px", {"lineHeight": "1.5", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "1.4", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { zoom: 0.8; }
+        .card-custom {
+            background-color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            transition: transform 0.2s ease;
+        }
+        .card-custom:hover {
+            transform: translateY(-5px);
+        }
+        .btn-accent {
+            background: linear-gradient(135deg, #ee4d2d 0%, #ff763b 100%);
+            box-shadow: 0 4px 10px rgba(238, 77, 45, 0.2);
+            transition: all 0.2s ease;
+        }
+        .btn-accent:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .status-pill {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-on-background flex flex-col py-6 border-r border-outline-variant shadow-lg z-50">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">restaurant_menu</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-white tracking-tight">Masyul Kebab</h1>
+<p class="text-secondary-fixed-dim text-[10px] uppercase tracking-widest font-bold">Management Portal</p>
+</div>
+</div>
+<nav class="flex-1 px-2 space-y-1 overflow-y-auto scrollbar-hide">
+<div class="text-[10px] px-4 py-2 text-secondary-fixed-dim font-bold uppercase tracking-widest opacity-50">General</div>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed mx-2 my-1 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<div class="text-[10px] px-4 py-2 mt-4 text-secondary-fixed-dim font-bold uppercase tracking-widest opacity-50">Kemitraan &amp; Cabang</div>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed mx-2 my-1 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-body-md text-body-md">Data Mitra</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed mx-2 my-1 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">store</span>
+<span class="font-body-md text-body-md">Data Cabang</span>
+</a>
+<div class="text-[10px] px-4 py-2 mt-4 text-secondary-fixed-dim font-bold uppercase tracking-widest opacity-50">Operasional</div>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed mx-2 my-1 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-body-md text-body-md">Stok Bahan Baku</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed mx-2 my-1 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">input</span>
+<span class="font-body-md text-body-md">Stok Masuk</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed mx-2 my-1 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-body-md text-body-md">Pesanan Mitra</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:bg-secondary-fixed hover:text-on-secondary-fixed mx-2 my-1 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-md text-body-md">Laporan Omset</span>
+</a>
+<div class="text-[10px] px-4 py-2 mt-4 text-secondary-fixed-dim font-bold uppercase tracking-widest opacity-50">Persetujuan</div>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-white rounded-lg mx-2 my-1 shadow-md scale-95 transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fact_check</span>
+<span class="font-body-md text-body-md">Edit Approval</span>
+<span class="ml-auto bg-white/20 px-2 py-0.5 rounded text-[10px] font-bold">2</span>
+</a>
+</nav>
+<div class="mt-auto px-4 py-4 border-t border-outline-variant/20">
+<a class="flex items-center gap-3 px-4 py-2 text-secondary-fixed-dim hover:bg-red-900/20 hover:text-red-400 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">Keluar / Logout</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-[280px] h-16 bg-surface border-b border-outline-variant flex items-center justify-between px-8 z-40">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">arrow_back</span>
+</button>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Persetujuan Edit Data (Approval)</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-600 rounded-full border-2 border-surface"></span>
+</button>
+</div>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant">
+<div class="text-right hidden sm:block">
+<p class="font-title-md text-title-md text-on-surface">Masyul Owner</p>
+<p class="text-[10px] text-secondary font-bold uppercase">Super Admin</p>
+</div>
+<img alt="Owner Avatar" class="w-10 h-10 rounded-full object-cover border-2 border-primary-fixed shadow-sm" data-alt="A professional portrait of a business owner in a modern office environment. The person is dressed in smart business casual attire and exudes confidence. High-key soft lighting from large windows creates a clean, premium corporate look with a bright background. Professional photography style for a high-end SaaS administrative dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRVUPyyr3O6vsbvTYjmLFaHltagUDuLM2XRDdydW0nuIV0AgVuxBwfEmexjc1oa9KcvM0gWWo-b9fs7px8UmjDUyME35L6t0Aq37Ved4u5u9s0u6GIGQWn8zDKrlaXz6xGz5Lkf-HM_eatP2W8aQ8a0XxsJC8fQEJsjS5YsD7l5h5csfHm_06ePwMmhQbZChd6TJN1AyJNvBeCBK4S89Vg5UnCyZ0z878XaUGXqvVtw--jW_jykVftVLmsDBPexCj5SBndVrZKWiI"/>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">expand_more</span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[280px] pt-16 min-h-screen">
+<div class="p-8">
+<!-- Header Section -->
+<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Daftar Pengajuan Koreksi Data</h3>
+<p class="text-on-surface-variant max-w-2xl font-body-md">
+                        Tinjau dan setujui atau tolak permintaan edit data dari Admin Utama untuk menjaga integritas data operasional.
+                    </p>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2.5 rounded-lg border border-outline text-on-surface hover:bg-surface-container transition-all flex items-center gap-2 font-title-md">
+<span class="material-symbols-outlined text-[20px]">filter_list</span> Filter
+                    </button>
+<button class="px-4 py-2.5 rounded-lg border border-outline text-on-surface hover:bg-surface-container transition-all flex items-center gap-2 font-title-md">
+<span class="material-symbols-outlined text-[20px]">download</span> Export
+                    </button>
+</div>
+</div>
+<!-- Dashboard Overview Bento (Small Accents) -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<div class="card-custom rounded-xl p-5 border-l-4 border-primary">
+<div class="flex items-center justify-between mb-2">
+<span class="text-on-surface-variant font-label-sm uppercase tracking-wider">Total Request</span>
+<span class="material-symbols-outlined text-primary">pending_actions</span>
+</div>
+<div class="text-3xl font-bold text-on-surface">12</div>
+<div class="text-[10px] text-green-600 font-bold mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">trending_up</span> +3 compared to last week
+                    </div>
+</div>
+<div class="card-custom rounded-xl p-5 border-l-4 border-amber-400">
+<div class="flex items-center justify-between mb-2">
+<span class="text-on-surface-variant font-label-sm uppercase tracking-wider">Pending Approval</span>
+<span class="material-symbols-outlined text-amber-500">hourglass_empty</span>
+</div>
+<div class="text-3xl font-bold text-on-surface">2</div>
+<div class="text-[10px] text-amber-600 font-bold mt-1">Needs immediate review</div>
+</div>
+<div class="card-custom rounded-xl p-5 border-l-4 border-green-500">
+<div class="flex items-center justify-between mb-2">
+<span class="text-on-surface-variant font-label-sm uppercase tracking-wider">Approved Today</span>
+<span class="material-symbols-outlined text-green-600">check_circle</span>
+</div>
+<div class="text-3xl font-bold text-on-surface">8</div>
+<div class="text-[10px] text-green-600 font-bold mt-1">Processed successfully</div>
+</div>
+<div class="card-custom rounded-xl p-5 border-l-4 border-red-500">
+<div class="flex items-center justify-between mb-2">
+<span class="text-on-surface-variant font-label-sm uppercase tracking-wider">Rejected</span>
+<span class="material-symbols-outlined text-red-600">cancel</span>
+</div>
+<div class="text-3xl font-bold text-on-surface">2</div>
+<div class="text-[10px] text-red-400 font-bold mt-1">Invalid data submitted</div>
+</div>
+</div>
+<!-- Data Table Card -->
+<div class="card-custom rounded-xl overflow-hidden border border-outline-variant/10">
+<div class="bg-white px-6 py-4 border-b border-outline-variant flex items-center justify-between">
+<h4 class="font-title-md text-title-md text-on-surface">Tabel Pengajuan</h4>
+<div class="relative w-72">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface rounded-lg border-outline-variant focus:ring-primary focus:border-primary text-body-md" placeholder="Cari admin atau alasan..." type="text"/>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-4 font-label-sm uppercase tracking-widest text-on-surface-variant">ID</th>
+<th class="px-6 py-4 font-label-sm uppercase tracking-widest text-on-surface-variant">Pemohon (Admin)</th>
+<th class="px-6 py-4 font-label-sm uppercase tracking-widest text-on-surface-variant">Tipe Data</th>
+<th class="px-6 py-4 font-label-sm uppercase tracking-widest text-on-surface-variant">Alasan Koreksi</th>
+<th class="px-6 py-4 font-label-sm uppercase tracking-widest text-on-surface-variant">Tanggal Pengajuan</th>
+<th class="px-6 py-4 font-label-sm uppercase tracking-widest text-on-surface-variant text-center">Status</th>
+<th class="px-6 py-4 font-label-sm uppercase tracking-widest text-on-surface-variant text-center">Aksi</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-6 py-5 text-on-surface-variant font-bold">#1</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold text-[12px]">MA</div>
+<span class="font-title-md text-on-surface">Masyul Admin</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[11px] font-bold border border-blue-100 uppercase">Laporan Omset</span>
+</td>
+<td class="px-6 py-5 max-w-[250px]">
+<p class="text-on-surface-variant italic truncate">"Admin salah mengetik nominal omset dari WA Mitra Salemba."</p>
+</td>
+<td class="px-6 py-5 text-on-surface-variant font-body-md">07-06-2026 09:58</td>
+<td class="px-6 py-5 text-center">
+<span class="status-pill bg-amber-100 text-amber-700">Pending</span>
+</td>
+<td class="px-6 py-5 text-center">
+<button class="btn-accent px-5 py-2 rounded-lg text-white font-title-md flex items-center justify-center gap-2 mx-auto">
+<span class="material-symbols-outlined text-[18px]">visibility</span> Tinjau
+                                    </button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-6 py-5 text-on-surface-variant font-bold">#2</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center font-bold text-[12px]">MA</div>
+<span class="font-title-md text-on-surface">Masyul Admin</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-[11px] font-bold border border-indigo-100 uppercase">Profil Mitra</span>
+</td>
+<td class="px-6 py-5 max-w-[250px]">
+<p class="text-on-surface-variant italic truncate">"Mitra Margonda ganti nomor WhatsApp bisnis."</p>
+</td>
+<td class="px-6 py-5 text-on-surface-variant font-body-md">06-06-2026 09:58</td>
+<td class="px-6 py-5 text-center">
+<span class="status-pill bg-green-100 text-green-700">Disetujui</span>
+</td>
+<td class="px-6 py-5 text-center">
+<button class="bg-surface-container px-5 py-2 rounded-lg text-on-surface-variant font-title-md flex items-center justify-center gap-2 mx-auto hover:bg-outline-variant transition-colors">
+<span class="material-symbols-outlined text-[18px]">history</span> Detail
+                                    </button>
+</td>
+</tr>
+<!-- More placeholder rows for visual density -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-6 py-5 text-on-surface-variant font-bold opacity-50">#3</td>
+<td class="px-6 py-5 opacity-50">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center font-bold text-[12px]">SA</div>
+<span class="font-title-md text-on-surface">Staff Admin 2</span>
+</div>
+</td>
+<td class="px-6 py-5 opacity-50">
+<span class="bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-[11px] font-bold border border-orange-100 uppercase">Stok Bahan</span>
+</td>
+<td class="px-6 py-5 opacity-50 max-w-[250px]">
+<p class="text-on-surface-variant italic truncate">"Koreksi jumlah tepung masuk di Gudang Pusat."</p>
+</td>
+<td class="px-6 py-5 opacity-50 text-on-surface-variant font-body-md">05-06-2026 14:20</td>
+<td class="px-6 py-5 text-center opacity-50">
+<span class="status-pill bg-red-100 text-red-700">Ditolak</span>
+</td>
+<td class="px-6 py-5 text-center opacity-50">
+<button class="bg-surface-container px-5 py-2 rounded-lg text-on-surface-variant font-title-md flex items-center justify-center gap-2 mx-auto">
+<span class="material-symbols-outlined text-[18px]">history</span> Detail
+                                    </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="bg-surface-container-lowest px-6 py-4 flex items-center justify-between border-t border-outline-variant">
+<p class="text-body-md text-on-surface-variant">Menampilkan <span class="font-bold text-on-surface">3</span> dari <span class="font-bold text-on-surface">12</span> pengajuan</p>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg border border-outline-variant text-on-surface-variant disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 rounded-lg bg-primary text-white font-bold flex items-center justify-center">1</button>
+<button class="w-10 h-10 rounded-lg border border-outline-variant text-on-surface hover:bg-surface-container transition-colors">2</button>
+<button class="w-10 h-10 rounded-lg border border-outline-variant text-on-surface hover:bg-surface-container transition-colors">3</button>
+<button class="p-2 rounded-lg border border-outline-variant text-on-surface-variant">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Quick Actions / Support -->
+<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-primary-fixed-dim/20 rounded-2xl p-6 flex items-start gap-4">
+<div class="p-3 bg-white rounded-xl shadow-sm">
+<span class="material-symbols-outlined text-primary text-[28px]">policy</span>
+</div>
+<div>
+<h5 class="font-title-md text-title-md text-on-surface mb-1">Panduan Approval</h5>
+<p class="text-on-surface-variant text-sm mb-3">Pahami kriteria penyetujuan data untuk menjaga standar operasional Masyul Kebab.</p>
+<a class="text-primary font-bold text-sm flex items-center gap-1 hover:underline" href="#">
+                            Pelajari Selengkapnya <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</div>
+</div>
+<div class="bg-secondary-fixed/20 rounded-2xl p-6 flex items-start gap-4">
+<div class="p-3 bg-white rounded-xl shadow-sm">
+<span class="material-symbols-outlined text-secondary text-[28px]">support_agent</span>
+</div>
+<div>
+<h5 class="font-title-md text-title-md text-on-surface mb-1">Butuh Bantuan?</h5>
+<p class="text-on-surface-variant text-sm mb-3">Hubungi tim IT untuk kendala teknis terkait dashboard management portal.</p>
+<a class="text-secondary font-bold text-sm flex items-center gap-1 hover:underline" href="#">
+                            Chat Support <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<div class="relative rounded-2xl p-6 overflow-hidden group">
+<img alt="Franchise context" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="A close-up artistic shot of a chef preparing fresh kebab ingredients in a bright, modern, and clean kitchen environment. The lighting is warm and energetic, highlighting the vibrant colors of the vegetables and succulent meats. The overall mood is professional, appetizing, and reflective of a successful food franchise operation. High contrast with deep shadows and bright highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApq0e4jvWdyiqUdhKLoI_f_02ytv03r8PynNI3sM3B8B8yc710BLNyXhrZ6iiZiGqYSIDrXihzq39LuCKff_KeT0ShXS1NQ87YXR1RML3oJbXZVXcxtC3TT0pPG22NMPTsovAZY2KxKTONUaKFZuSiZS9FN3Hy4y4tQ1PeVqIRq_5dNp3Lq3mteS8YkIV_W3Lb0OTZ9WyuVpqVwnNYdEgIRSl5VaSzZUwSqScfurxxVVWoOqVZJVVIt8CK9LeFrpEi6Q7tl09inkc"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background via-on-background/40 to-transparent"></div>
+<div class="relative h-full flex flex-col justify-end">
+<h5 class="font-title-md text-title-md text-white mb-1">Masyul Franchise Insights</h5>
+<p class="text-white/80 text-xs">Cek statistik terbaru performa seluruh cabang mitra Anda hari ini.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Toast Notification (Interaction Demo) -->
+<div class="fixed bottom-8 right-8 bg-on-background text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 translate-y-20 opacity-0 transition-all duration-500 z-[100]" id="toast">
+<span class="material-symbols-outlined text-green-400">check_circle</span>
+<span class="font-title-md">Data pengajuan telah disetujui</span>
+</div>
+<script>
+        // Micro-interactions
+        document.querySelectorAll('.btn-accent').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const toast = document.getElementById('toast');
+                toast.classList.remove('translate-y-20', 'opacity-0');
+                
+                setTimeout(() => {
+                    toast.classList.add('translate-y-20', 'opacity-0');
+                }, 3000);
+            });
+        });
+
+        // Search bar interaction
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-primary/20');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-primary/20');
+        });
+    </script>
+</body></html>

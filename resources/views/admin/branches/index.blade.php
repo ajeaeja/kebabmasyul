@@ -5,84 +5,111 @@
 
 @section('content')
 <div class="container-fluid p-0">
-    <!-- Search & Filter Card -->
+    <!-- Header Title & Subtitle from Stitch -->
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h4 class="font-weight-800 text-dark mb-1">Kelola Cabang / Kedai</h4>
+            <p class="text-muted m-0" style="font-size: 0.9rem;">Manage and monitor all active franchise locations.</p>
+        </div>
+        @if(Auth::user()->isAdmin())
+            <a href="{{ route('branches.create') }}" class="btn btn-accent rounded-3 font-weight-700 px-4 py-2.5 d-flex align-items-center gap-2">
+                <span class="material-symbols-outlined text-[20px]">add</span>
+                <span>Tambah Cabang</span>
+            </a>
+        @endif
+    </div>
+
+    <!-- Search & Filter Card from Stitch -->
     <div class="card-custom p-4 mb-4">
-        <form action="{{ route('branches.index') }}" method="GET" class="row g-2 align-items-end">
+        <form action="{{ route('branches.index') }}" method="GET" class="row g-3 align-items-center">
             <div class="col-md-5 col-12">
-                <label for="search" class="form-label text-muted font-weight-600" style="font-size: 0.75rem;">Cari Nama Cabang</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <input type="text" class="form-control border-start-0" id="search" name="search" placeholder="Masukkan nama cabang..." value="{{ request('search') }}">
+                <div class="position-relative">
+                    <span class="material-symbols-outlined position-absolute text-muted" style="left: 12px; top: 50%; transform: translateY(-50%); font-size: 20px;">search</span>
+                    <input type="text" class="form-control" style="padding-left: 42px; py: 2.5;" id="search" name="search" placeholder="Cari nama cabang..." value="{{ request('search') }}">
                 </div>
             </div>
             <div class="col-md-4 col-12">
-                <label for="status" class="form-label text-muted font-weight-600" style="font-size: 0.75rem;">Status Cabang</label>
-                <select class="form-select" id="status" name="status">
-                    <option value="">-- Semua Status --</option>
-                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Aktif</option>
-                    <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Nonaktif</option>
-                </select>
+                <div class="position-relative">
+                    <select class="form-select" id="status" name="status" style="padding-right: 40px;">
+                        <option value="">-- Semua Status --</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Aktif</option>
+                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Nonaktif</option>
+                    </select>
+                </div>
             </div>
-            <div class="col-md-3 col-12 d-grid gap-2 d-md-flex">
-                <button type="submit" class="btn btn-accent flex-grow-1 py-2"><i class="bi bi-funnel me-1"></i> Filter</button>
-                <a href="{{ route('branches.index') }}" class="btn btn-light border py-2"><i class="bi bi-arrow-counterclockwise"></i> Reset</a>
+            <div class="col-md-3 col-12 d-flex gap-2">
+                <button type="submit" class="btn btn-accent flex-grow-1 py-2.5 d-flex align-items-center justify-content-center gap-1">
+                    <span class="material-symbols-outlined text-[18px]">filter_list</span>
+                    Filter
+                </button>
+                <a href="{{ route('branches.index') }}" class="btn btn-light border py-2.5 d-flex align-items-center justify-content-center gap-1">
+                    <span class="material-symbols-outlined text-[18px]">refresh</span>
+                    Reset
+                </a>
             </div>
         </form>
     </div>
 
-    <!-- Main List Card -->
+    <!-- Main List Card from Stitch -->
     <div class="card-custom p-0">
-        <div class="card-header-custom d-flex justify-content-between align-items-center">
-            <div>
-                <span class="text-dark font-weight-700">Daftar Cabang Kedai Masyul Kebab</span>
-                <p class="m-0 text-muted d-none d-md-block" style="font-size: 0.8rem; font-weight: 400;">Mencakup cabang operasional pusat (internal) dan outlet franchise (mitra).</p>
-            </div>
-            <a href="{{ route('branches.create') }}" class="btn btn-accent rounded-3 font-weight-700 px-3 py-2 d-flex align-items-center justify-content-center" title="Tambah Cabang">
-                <i class="bi bi-shop-window me-md-1"></i> <span class="d-none d-md-inline">Tambah Cabang</span>
-            </a>
+        <div class="card-header-custom border-bottom py-3 px-4">
+            <span class="text-dark font-weight-700">Daftar Cabang</span>
         </div>
-        <div class="p-4">
+        <div class="p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-hover align-middle mb-0" style="border-collapse: collapse;">
                     <thead>
-                        <tr class="text-muted" style="font-size: 0.8rem;">
-                            <th>NAMA CABANG</th>
-                            <th>TANGGAL DIBUKA</th>
-                            <th>ALAMAT KEDAI</th>
-                            <th class="text-center">STATUS</th>
-                            <th class="text-center" style="width: 180px;">AKSI</th>
+                        <tr class="bg-light text-muted uppercase font-weight-700" style="font-size: 0.75rem; border-bottom: 1px solid #f1f5f9;">
+                            <th class="py-3 px-6">NAMA CABANG</th>
+                            <th class="py-3 px-6">TANGGAL DIBUKA</th>
+                            <th class="py-3 px-6">ALAMAT KEDAI</th>
+                            <th class="py-3 px-6 text-center">STATUS</th>
+                            <th class="py-3 px-6 text-center" style="width: 140px;">AKSI</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="divide-y">
                         @forelse($branches as $branch)
-                            <tr style="font-size: 0.875rem;">
-                                <td class="font-weight-700 text-dark">{{ $branch->name }}</td>
-                                <td>{{ $branch->opened_date ? date('d-m-Y', strtotime($branch->opened_date)) : '-' }}</td>
-                                <td style="max-width: 350px;" class="text-truncate">{{ $branch->address }}</td>
-                                <td class="text-center">
+                            <tr class="transition-colors group" style="font-size: 0.875rem;">
+                                <td class="py-3.5 px-6">
+                                    <div class="font-semibold text-on-surface">{{ $branch->name }}</div>
+                                    <div class="text-secondary text-sm">Pengelola: {{ $branch->pengelola_cabang ?? 'Pusat' }}</div>
+                                </td>
+                                <td class="py-3.5 px-6 text-on-surface-variant">
+                                    {{ $branch->opened_date ? date('d M Y', strtotime($branch->opened_date)) : '-' }}
+                                </td>
+                                <td class="py-3.5 px-6 max-w-xs truncate text-on-surface-variant" title="{{ $branch->address }}">
+                                    {{ $branch->address }}
+                                </td>
+                                <td class="py-3.5 px-6 text-center">
                                     @if($branch->status === 'active')
-                                        <span class="badge bg-success bg-opacity-10 text-success badge-pill-custom">Aktif</span>
+                                        <span class="badge bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-pill px-3 py-1.5 font-weight-700" style="background-color: #d1fae5; color: #065f46; border-color: #a7f3d0 !important;">
+                                            <span class="d-inline-block rounded-circle bg-emerald-600 me-1" style="width: 6px; height: 6px; background-color: #059669;"></span>
+                                            Aktif
+                                        </span>
                                     @else
-                                        <span class="badge bg-danger bg-opacity-10 text-danger badge-pill-custom">Nonaktif</span>
+                                        <span class="badge bg-red-100 text-red-800 border border-red-200 rounded-pill px-3 py-1.5 font-weight-700" style="background-color: #fee2e2; color: #991b1b; border-color: #fca5a5 !important;">
+                                            <span class="d-inline-block rounded-circle bg-red-600 me-1" style="width: 6px; height: 6px; background-color: #dc2626;"></span>
+                                            Nonaktif
+                                        </span>
                                     @endif
                                 </td>
-                                <td class="text-center">
+                                <td class="py-3.5 px-6">
                                     <div class="d-flex gap-2 justify-content-center">
-                                        <a href="{{ route('branches.show', $branch->id) }}" class="btn btn-sm btn-outline-info border-0 rounded-circle" title="Detail Cabang">
-                                            <i class="bi bi-eye fs-6"></i>
+                                        <a href="{{ route('branches.show', $branch->id) }}" class="btn btn-sm btn-light border rounded-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Detail">
+                                            <span class="material-symbols-outlined text-muted" style="font-size: 18px;">visibility</span>
                                         </a>
 
                                         @if(Auth::user()->isAdmin())
-                                            <a href="{{ route('branches.edit', $branch->id) }}" class="btn btn-sm btn-outline-primary border-0 rounded-circle" title="Edit/Ajukan Edit">
-                                                <i class="bi bi-pencil-square fs-6"></i>
+                                            <a href="{{ route('branches.edit', $branch->id) }}" class="btn btn-sm btn-light border rounded-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Edit">
+                                                <span class="material-symbols-outlined text-muted" style="font-size: 18px;">edit</span>
                                             </a>
                                             
                                             @if($branch->status === 'active')
-                                                <form action="{{ route('branches.destroy', $branch->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menonaktifkan cabang ini?')">
+                                                <form action="{{ route('branches.destroy', $branch->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menonaktifkan cabang ini?')" class="m-0">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger border-0 rounded-circle" title="Nonaktifkan Cabang">
-                                                        <i class="bi bi-shop me-1" style="font-size: 1rem; color: #dc3545; filter: drop-shadow(0 0 1px #dc3545);"></i>
+                                                    <button type="submit" class="btn btn-sm btn-light border rounded-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Nonaktifkan">
+                                                        <span class="material-symbols-outlined text-danger" style="font-size: 18px;">block</span>
                                                     </button>
                                                 </form>
                                             @endif
@@ -92,7 +119,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-muted py-4">Belum ada data cabang terdaftar.</td>
+                                <td colspan="5" class="text-center text-muted py-5">Belum ada data cabang terdaftar.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -100,8 +127,13 @@
             </div>
 
             <!-- Pagination -->
-            <div class="mt-4">
-                {{ $branches->links() }}
+            <div class="px-6 py-3 border-top bg-light d-flex justify-content-between align-items-center">
+                <div class="text-muted" style="font-size: 0.85rem;">
+                    Menampilkan <span class="font-weight-700 text-dark">{{ $branches->firstItem() ?? 0 }} - {{ $branches->lastItem() ?? 0 }}</span> dari <span class="font-weight-700 text-dark">{{ $branches->total() }}</span> cabang
+                </div>
+                <div>
+                    {{ $branches->links('pagination::bootstrap-5') }}
+                </div>
             </div>
         </div>
     </div>

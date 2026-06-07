@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Data Cabang - Kebab Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#b22204",
+                        "on-surface-variant": "#5b403b",
+                        "on-secondary-fixed-variant": "#45474c",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#c6c6cd",
+                        "primary-fixed-dim": "#ffb4a4",
+                        "on-error": "#ffffff",
+                        "primary-container": "#d63c1e",
+                        "on-primary-container": "#fffbff",
+                        "inverse-surface": "#263143",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#616269",
+                        "surface-container-low": "#f0f3ff",
+                        "on-secondary-fixed": "#1a1b21",
+                        "inverse-on-surface": "#ecf1ff",
+                        "inverse-primary": "#ffb4a4",
+                        "background": "#f9f9ff",
+                        "surface": "#f9f9ff",
+                        "surface-container-high": "#dee8ff",
+                        "on-tertiary-fixed": "#370e00",
+                        "surface-bright": "#f9f9ff",
+                        "secondary": "#5d5e64",
+                        "on-surface": "#111c2d",
+                        "secondary-container": "#dfdfe6",
+                        "on-tertiary-fixed-variant": "#7f2b00",
+                        "on-tertiary-container": "#fffbff",
+                        "tertiary-container": "#c74e13",
+                        "surface-container": "#e7eeff",
+                        "on-background": "#111c2d",
+                        "surface-dim": "#cfdaf2",
+                        "secondary-fixed": "#e2e2e9",
+                        "primary-fixed": "#ffdad3",
+                        "outline": "#8f7069",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#8d1600",
+                        "surface-variant": "#d8e3fb",
+                        "surface-container-highest": "#d8e3fb",
+                        "outline-variant": "#e3beb6",
+                        "tertiary-fixed": "#ffdbce",
+                        "tertiary": "#a33900",
+                        "on-primary-fixed": "#3e0500",
+                        "surface-tint": "#b62506",
+                        "tertiary-fixed-dim": "#ffb599"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "zoom-factor": "0.8",
+                        "section-gap": "2rem",
+                        "card-padding": "1.5rem",
+                        "gutter-width": "1.5rem",
+                        "container-margin": "2rem"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "title-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-sm": ["20px", { "lineHeight": "1.4", "fontWeight": "700" }],
+                        "title-md": ["16px", { "lineHeight": "1.5", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-size: 80%; background-color: #f8f9fa; } /* 80% global zoom */
+        .btn-accent {
+            background: linear-gradient(135deg, #ee4d2d, #ff763b);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(238, 77, 45, 0.2), 0 2px 4px -1px rgba(238, 77, 45, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn-accent:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 8px -1px rgba(238, 77, 45, 0.3), 0 4px 6px -1px rgba(238, 77, 45, 0.2);
+        }
+        .card-custom {
+            background-color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            border-radius: 0.75rem;
+            transition: transform 0.2s ease;
+        }
+        .card-custom:hover {
+            transform: translateY(-5px);
+        }
+        .badge-pill-custom.success {
+            background-color: rgba(34, 197, 94, 0.1);
+            color: rgb(34, 197, 94);
+        }
+        .badge-pill-custom.danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: rgb(239, 68, 68);
+        }
+        .badge-pill-custom.warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: rgb(245, 158, 11);
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface bg-background antialiased flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<aside class="bg-[#111318] shadow-2xl fixed h-full w-[280px] left-0 top-0 hidden md:block z-40 transition-all duration-200 ease-in-out">
+<div class="flex flex-col h-full py-6">
+<!-- Brand -->
+<div class="px-6 mb-8 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-headline-md font-bold">K</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-white">Kebab Portal</h1>
+<p class="font-label-sm text-label-sm text-secondary-fixed-dim mt-1">Franchise Management</p>
+</div>
+</div>
+<!-- Navigation -->
+<nav class="flex-1 overflow-y-auto px-2 space-y-6">
+<!-- Group: General -->
+<div>
+<div class="px-4 mb-2">
+<span class="font-label-sm text-label-sm text-secondary-fixed-dim uppercase tracking-wider">General</span>
+</div>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-white hover:bg-on-secondary-fixed-variant/50 transition-colors duration-200 rounded-lg mx-2" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+</div>
+<!-- Group: Kemitraan & Cabang -->
+<div>
+<div class="px-4 mb-2">
+<span class="font-label-sm text-label-sm text-secondary-fixed-dim uppercase tracking-wider">Kemitraan &amp; Cabang</span>
+</div>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-white hover:bg-on-secondary-fixed-variant/50 transition-colors duration-200 rounded-lg mx-2" href="#">
+<span class="material-symbols-outlined">handshake</span>
+<span class="font-body-md text-body-md">Data Mitra</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed bg-on-secondary-fixed-variant rounded-lg mx-2" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">store</span>
+<span class="font-body-md text-body-md font-semibold">Data Cabang</span>
+</a>
+</div>
+<!-- Group: Operasional -->
+<div>
+<div class="px-4 mb-2">
+<span class="font-label-sm text-label-sm text-secondary-fixed-dim uppercase tracking-wider">Operasional</span>
+</div>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-white hover:bg-on-secondary-fixed-variant/50 transition-colors duration-200 rounded-lg mx-2" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-body-md text-body-md">Stok Bahan Baku</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-white hover:bg-on-secondary-fixed-variant/50 transition-colors duration-200 rounded-lg mx-2" href="#">
+<span class="material-symbols-outlined">input</span>
+<span class="font-body-md text-body-md">Stok Masuk</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-white hover:bg-on-secondary-fixed-variant/50 transition-colors duration-200 rounded-lg mx-2" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-body-md text-body-md">Pesanan Mitra</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-white hover:bg-on-secondary-fixed-variant/50 transition-colors duration-200 rounded-lg mx-2" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<span class="font-body-md text-body-md">Laporan Omset</span>
+</a>
+</div>
+<!-- Group: Persetujuan -->
+<div>
+<div class="px-4 mb-2">
+<span class="font-label-sm text-label-sm text-secondary-fixed-dim uppercase tracking-wider">Persetujuan</span>
+</div>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-white hover:bg-on-secondary-fixed-variant/50 transition-colors duration-200 rounded-lg mx-2" href="#">
+<span class="material-symbols-outlined">rule</span>
+<span class="font-body-md text-body-md">Edit Approval</span>
+</a>
+</div>
+</nav>
+<!-- Footer Nav -->
+<div class="mt-auto px-2 pt-4 border-t border-on-secondary-fixed-variant/30">
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-white hover:bg-on-secondary-fixed-variant/50 transition-colors duration-200 rounded-lg mx-2" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-white hover:bg-on-secondary-fixed-variant/50 transition-colors duration-200 rounded-lg mx-2" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md text-body-md">Logout</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col md:ml-[280px] h-screen overflow-hidden">
+<!-- TopNavBar -->
+<header class="docked full-width top-0 border-b border-outline-variant bg-surface z-30">
+<div class="flex justify-between items-center w-full px-6 py-3">
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface">Management Portal</div>
+<div class="flex items-center gap-4">
+<!-- Search (Left aligned in original JSON, but moved right for desktop topbar common pattern) -->
+<div class="relative hidden lg:block mr-4">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-high border-none rounded-full font-body-md text-body-md focus:ring-2 focus:ring-primary focus:outline-none w-64 text-on-surface" placeholder="Search..." type="text"/>
+</div>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full relative scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-container overflow-hidden ml-2 border-2 border-surface-variant cursor-pointer">
+<img alt="Manager Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4lKpMBEsxEyvOtxoQ7lAuMnokcyYYvEpzPVpR5hT-jLLGMyTH_YZd6D_vXtC95MGBk9gjY6IcJ62gLBy7ICIVR4pMu5xQodmPBjIeQwCSU3CfJ7iJMtpvXkGbhnld81GgSYKLXbpROAz3eSh1htSPNBldTk07oO0mAseZ4y5zFUORI4Ptd5oxOviKBm_U721U0AC0nLrxem6wpRTvC-CsmBfIBcQZuisK4oZWtvQBhtQ7yFxAlot0G7VGsDyE9EQLF7rqRW92BbE"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Scrollable Area -->
+<main class="flex-1 overflow-y-auto p-8">
+<div class="max-w-7xl mx-auto">
+<!-- Page Header & Actions -->
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Kelola Cabang / Kedai</h2>
+<p class="font-body-md text-body-md text-secondary mt-1">Manage and monitor all active franchise locations.</p>
+</div>
+<div class="flex items-center gap-3">
+<!-- Filters -->
+<div class="relative">
+<select class="appearance-none bg-white border border-secondary-container text-on-surface py-2.5 pl-4 pr-10 rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary">
+<option>Semua Status</option>
+<option>Aktif</option>
+<option>Non-Aktif</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-secondary pointer-events-none">expand_more</span>
+</div>
+<div class="relative">
+<input class="bg-white border border-secondary-container text-on-surface py-2.5 pl-10 pr-4 rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary w-64" placeholder="Cari Nama Cabang..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary">search</span>
+</div>
+<button class="btn-accent px-6 py-2.5 rounded-lg font-title-md text-title-md flex items-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                            Tambah Cabang
+                        </button>
+</div>
+</div>
+<!-- Reference Image Container (Optional, keeping as requested but styled nicely) -->
+<div class="mb-8 rounded-xl overflow-hidden shadow-lg hidden">
+<img alt="Layout Reference" class="w-full h-auto opacity-50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2HAxTz_qAmOF7vArHPBfQUQ_HFsRcx8t3smiOeX9huomFjwLyDL6Vdr8MUqRgt78HD_jjT8bJwI8N41ASCVzJHiabWDoipbdrDkq_zVipFXrYo3e87wbi7KIBmouBVcAvyIftzX2tQfnrIJKCFL-HDDxLKe77J-3fZosYzdCzUXiMqSE1aKRmO7CgZuXqfjWQBnMNpg_AG17yx9YcIKzDX10c52Kq4Xtl6vl-FV289JS7GQLIeNVqDqDiMvEdHTgSINDMNzF_fGA"/>
+</div>
+<!-- Data Table Card -->
+<div class="card-custom overflow-hidden">
+<div class="px-6 py-4 border-b border-[#f1f5f9] bg-white/50 backdrop-blur-sm">
+<h3 class="font-title-md text-title-md text-on-surface">Daftar Cabang</h3>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-secondary-container bg-surface-container-lowest">
+<th class="py-4 px-6 font-label-sm text-label-sm text-secondary uppercase tracking-wider whitespace-nowrap">NAMA CABANG</th>
+<th class="py-4 px-6 font-label-sm text-label-sm text-secondary uppercase tracking-wider whitespace-nowrap">TANGGAL DIBUKA</th>
+<th class="py-4 px-6 font-label-sm text-label-sm text-secondary uppercase tracking-wider whitespace-nowrap">ALAMAT KEDAI</th>
+<th class="py-4 px-6 font-label-sm text-label-sm text-secondary uppercase tracking-wider whitespace-nowrap">STATUS</th>
+<th class="py-4 px-6 font-label-sm text-label-sm text-secondary uppercase tracking-wider whitespace-nowrap text-right">AKSI</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface">
+<!-- Row 1 -->
+<tr class="border-b border-secondary-container/50 hover:bg-[#f1f5f9] transition-colors group">
+<td class="py-4 px-6">
+<div class="font-semibold text-on-surface">Kebab Kings - Sudirman</div>
+<div class="text-secondary text-sm">Mitra: Budi Santoso</div>
+</td>
+<td class="py-4 px-6 text-on-surface-variant">12 Jan 2023</td>
+<td class="py-4 px-6 max-w-xs truncate text-on-surface-variant" title="Jl. Jend. Sudirman No. 45, Jakarta Pusat">
+                                        Jl. Jend. Sudirman No. 45, Jakarta Pusat
+                                    </td>
+<td class="py-4 px-6">
+<span class="badge-pill-custom success px-3 py-1 rounded-full font-semibold text-sm">Aktif</span>
+</td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-secondary hover:text-primary transition-colors rounded bg-white shadow-sm border border-secondary-container">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="p-1.5 text-secondary hover:text-primary transition-colors rounded bg-white shadow-sm border border-secondary-container">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 text-secondary hover:text-error transition-colors rounded bg-white shadow-sm border border-secondary-container">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="border-b border-secondary-container/50 hover:bg-[#f1f5f9] transition-colors group">
+<td class="py-4 px-6">
+<div class="font-semibold text-on-surface">Kebab Kings - Kemang</div>
+<div class="text-secondary text-sm">Mitra: Siti Aminah</div>
+</td>
+<td class="py-4 px-6 text-on-surface-variant">05 Mar 2023</td>
+<td class="py-4 px-6 max-w-xs truncate text-on-surface-variant" title="Jl. Kemang Raya No. 12, Jakarta Selatan">
+                                        Jl. Kemang Raya No. 12, Jakarta Selatan
+                                    </td>
+<td class="py-4 px-6">
+<span class="badge-pill-custom success px-3 py-1 rounded-full font-semibold text-sm">Aktif</span>
+</td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-secondary hover:text-primary transition-colors rounded bg-white shadow-sm border border-secondary-container">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="p-1.5 text-secondary hover:text-primary transition-colors rounded bg-white shadow-sm border border-secondary-container">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 text-secondary hover:text-error transition-colors rounded bg-white shadow-sm border border-secondary-container">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="border-b border-secondary-container/50 hover:bg-[#f1f5f9] transition-colors group">
+<td class="py-4 px-6">
+<div class="font-semibold text-on-surface">Kebab Kings - Kelapa Gading</div>
+<div class="text-secondary text-sm">Mitra: Andi Wijaya</div>
+</td>
+<td class="py-4 px-6 text-on-surface-variant">20 Aug 2022</td>
+<td class="py-4 px-6 max-w-xs truncate text-on-surface-variant" title="Boulevard Kelapa Gading Blok M No. 3, Jakarta Utara">
+                                        Boulevard Kelapa Gading Blok M No. 3, Jakarta Utara
+                                    </td>
+<td class="py-4 px-6">
+<span class="badge-pill-custom danger px-3 py-1 rounded-full font-semibold text-sm">Tutup</span>
+</td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-secondary hover:text-primary transition-colors rounded bg-white shadow-sm border border-secondary-container">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="p-1.5 text-secondary hover:text-primary transition-colors rounded bg-white shadow-sm border border-secondary-container">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 text-secondary hover:text-error transition-colors rounded bg-white shadow-sm border border-secondary-container">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-[#f1f5f9] transition-colors group">
+<td class="py-4 px-6">
+<div class="font-semibold text-on-surface">Kebab Kings - Bintaro</div>
+<div class="text-secondary text-sm">Mitra: Rina Melati</div>
+</td>
+<td class="py-4 px-6 text-on-surface-variant">10 Nov 2023</td>
+<td class="py-4 px-6 max-w-xs truncate text-on-surface-variant" title="Bintaro Jaya Sektor 7, Tangerang Selatan">
+                                        Bintaro Jaya Sektor 7, Tangerang Selatan
+                                    </td>
+<td class="py-4 px-6">
+<span class="badge-pill-custom warning px-3 py-1 rounded-full font-semibold text-sm">Renovasi</span>
+</td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-secondary hover:text-primary transition-colors rounded bg-white shadow-sm border border-secondary-container">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="p-1.5 text-secondary hover:text-primary transition-colors rounded bg-white shadow-sm border border-secondary-container">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 text-secondary hover:text-error transition-colors rounded bg-white shadow-sm border border-secondary-container">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 border-t border-secondary-container flex items-center justify-between bg-surface-container-lowest">
+<span class="font-body-md text-body-md text-secondary">Showing 1 to 4 of 24 entries</span>
+<div class="flex gap-1">
+<button class="px-3 py-1 border border-secondary-container rounded text-secondary hover:bg-surface-container-high disabled:opacity-50" disabled="">Prev</button>
+<button class="px-3 py-1 border border-primary bg-primary text-white rounded">1</button>
+<button class="px-3 py-1 border border-secondary-container rounded text-secondary hover:bg-surface-container-high">2</button>
+<button class="px-3 py-1 border border-secondary-container rounded text-secondary hover:bg-surface-container-high">3</button>
+<button class="px-3 py-1 border border-secondary-container rounded text-secondary hover:bg-surface-container-high">Next</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

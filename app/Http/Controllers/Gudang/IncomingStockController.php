@@ -28,7 +28,8 @@ class IncomingStockController extends Controller implements HasMiddleware
         $incomingStocks = IncomingStock::with('rawMaterial')
             ->orderBy('incoming_date', 'desc')
             ->orderBy('id', 'desc')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
         return view('gudang.incoming_stocks.index', compact('incomingStocks'));
     }
 
