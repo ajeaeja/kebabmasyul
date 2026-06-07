@@ -39,6 +39,13 @@ class PartnerController extends Controller implements HasMiddleware
         }
 
         $partners = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('admin.partners.index', compact('partners'))->fragment('table-section')
+            ]);
+        }
+
         return view('admin.partners.index', compact('partners'));
     }
 

@@ -185,6 +185,14 @@ class PartnerOrderController extends Controller implements HasMiddleware
 
         $partners = Partner::where('status', 'active')->orderBy('name', 'asc')->get();
 
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('admin.orders.index', compact('orders', 'partnerChart', 'partners'))->fragment('table-section'),
+                'chart_data' => $chartPartnerPurchases,
+                'chart_labels' => $labels
+            ]);
+        }
+
         return view('admin.orders.index', compact('orders', 'partnerChart', 'partners'));
     }
 

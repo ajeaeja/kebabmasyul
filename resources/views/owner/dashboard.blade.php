@@ -123,7 +123,7 @@
                     </select>
                 </div>
                 <div style="height: 300px; position: relative;">
-                    <canvas id="branchRevenueChart"></canvas>
+                    <div id="branchRevenueChart" style="height: 300px;"></div>
                 </div>
             </div>
         </div>
@@ -144,7 +144,7 @@
                     </select>
                 </div>
                 <div style="height: 300px; position: relative;">
-                    <canvas id="partnerPurchasesChart"></canvas>
+                    <div id="partnerPurchasesChart" style="height: 300px;"></div>
                 </div>
             </div>
         </div>
@@ -256,129 +256,152 @@
 @endsection
 
 @section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Drilldown modal initializer
-    const drillDownModal = new bootstrap.Modal(document.getElementById('drillDownModal'));
-    const modalBody = document.getElementById('drillDownModalBody');
-
-    // 1. Line Chart: Omset Cabang Internal
-    const ctxRevenue = document.getElementById('branchRevenueChart').getContext('2d');
-    const branchChartData = @json($chartData);
-    
-    new Chart(ctxRevenue, {
-        type: 'line',
-        data: branchChartData,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            onClick: () => {
-                window.location.href = "{{ route('branch-reports.index') }}";
-            },
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        boxWidth: 12,
-                        padding: 15,
-                        font: {
-                            family: "'Plus Jakarta Sans', sans-serif",
-                            weight: '500'
-                        }
-                    }
-                },
-                tooltip: {
-                    padding: 12,
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) {
-                                label += ': ';
-                            }
-                            if (context.parsed.y !== null) {
-                                label += new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(context.parsed.y);
-                            }
-                            return label;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    grid: { display: false },
-                    ticks: { font: { family: "'Plus Jakarta Sans', sans-serif", weight: '500' } }
-                },
-                y: {
-                    grid: { color: '#f1f5f9' },
-                    ticks: {
-                        font: { family: "'Plus Jakarta Sans', sans-serif" },
-                        callback: function(value) {
-                            return 'Rp ' + new Intl.NumberFormat('id-ID', { maximumSignificantDigits: 3 }).format(value);
-                        }
-                    }
+    // 1. Line Chart: Omset Cabang Internal using ApexCharts
+    const branchRevenueOptions = {
+        chart: {
+            type: 'area',
+            height: 300,
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            toolbar: { show: false },
+            events: {
+                click: function() {
+                    window.location.href = "{{ route('branch-reports.index') }}";
                 }
             }
-        }
-    });
-
-    // 2. Line Chart: Partner Purchase Trends
-    const ctxPartner = document.getElementById('partnerPurchasesChart').getContext('2d');
-    const partnerChartData = @json($partnerChart);
-    
-    new Chart(ctxPartner, {
-        type: 'line',
-        data: partnerChartData,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            onClick: () => {
-                window.location.href = "{{ route('orders.index') }}";
-            },
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        boxWidth: 12,
-                        padding: 15,
-                        font: {
-                            family: "'Plus Jakarta Sans', sans-serif",
-                            weight: '500'
-                        }
-                    }
-                },
-                tooltip: {
-                    padding: 12,
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) {
-                                label += ': ';
-                            }
-                            if (context.parsed.y !== null) {
-                                label += 'Rp ' + new Intl.NumberFormat('id-ID').format(context.parsed.y);
-                            }
-                            return label;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    grid: { display: false },
-                    ticks: { font: { family: "'Plus Jakarta Sans', sans-serif", weight: '500' } }
-                },
-                y: {
-                    grid: { color: '#f1f5f9' },
-                    ticks: {
-                        font: { family: "'Plus Jakarta Sans', sans-serif" },
-                        callback: function(value) {
-                            return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
-                        }
-                    }
+        },
+        stroke: {
+            curve: 'smooth',
+            width: 3,
+            colors: ['#10b981']
+        },
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shadeIntensity: 1,
+                opacityFrom: 0.3,
+                opacityTo: 0.05,
+                stops: [0, 90, 100]
+            }
+        },
+        colors: ['#10b981'],
+        series: [{
+            name: 'Total Omset Cabang',
+            data: @json($chartBranchRevenue)
+        }],
+        xaxis: {
+            categories: @json($labels),
+            labels: {
+                style: {
+                    colors: '#64748b',
+                    fontWeight: 500
                 }
             }
+        },
+        yaxis: {
+            labels: {
+                formatter: function(val) {
+                    return 'Rp ' + new Intl.NumberFormat('id-ID', { maximumSignificantDigits: 3 }).format(val);
+                },
+                style: {
+                    colors: '#64748b'
+                }
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: function(val) {
+                    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
+                }
+            }
+        },
+        markers: {
+            size: 5,
+            colors: ['#10b981'],
+            strokeColors: '#fff',
+            strokeWidth: 2,
+            hover: { size: 7 }
+        },
+        grid: {
+            borderColor: '#f1f5f9'
         }
-    });
+    };
+
+    const branchRevenueChart = new ApexCharts(document.querySelector("#branchRevenueChart"), branchRevenueOptions);
+    branchRevenueChart.render();
+
+    // 2. Line Chart: Partner Purchase Trends using ApexCharts
+    const partnerPurchasesOptions = {
+        chart: {
+            type: 'area',
+            height: 300,
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            toolbar: { show: false },
+            events: {
+                click: function() {
+                    window.location.href = "{{ route('orders.index') }}";
+                }
+            }
+        },
+        stroke: {
+            curve: 'smooth',
+            width: 3,
+            colors: ['#f59e0b']
+        },
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shadeIntensity: 1,
+                opacityFrom: 0.3,
+                opacityTo: 0.05,
+                stops: [0, 90, 100]
+            }
+        },
+        colors: ['#f59e0b'],
+        series: [{
+            name: 'Nominal Pembelian Mitra',
+            data: @json($chartPartnerPurchases)
+        }],
+        xaxis: {
+            categories: @json($labels),
+            labels: {
+                style: {
+                    colors: '#64748b',
+                    fontWeight: 500
+                }
+            }
+        },
+        yaxis: {
+            labels: {
+                formatter: function(val) {
+                    return 'Rp ' + new Intl.NumberFormat('id-ID', { maximumSignificantDigits: 3 }).format(val);
+                },
+                style: {
+                    colors: '#64748b'
+                }
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: function(val) {
+                    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
+                }
+            }
+        },
+        markers: {
+            size: 5,
+            colors: ['#f59e0b'],
+            strokeColors: '#fff',
+            strokeWidth: 2,
+            hover: { size: 7 }
+        },
+        grid: {
+            borderColor: '#f1f5f9'
+        }
+    };
+
+    const partnerPurchasesChart = new ApexCharts(document.querySelector("#partnerPurchasesChart"), partnerPurchasesOptions);
+    partnerPurchasesChart.render();
 
     // Dropdown change handlers to submit automatically
     document.getElementById('periode_select').addEventListener('change', function() {

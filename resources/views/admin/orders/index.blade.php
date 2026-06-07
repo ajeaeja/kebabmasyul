@@ -108,7 +108,7 @@
                     </div>
                 </div>
                 <div style="height: 220px; position: relative;">
-                    <canvas id="partnerPurchasesChart"></canvas>
+                    <div id="partnerPurchasesChart" style="height: 220px;"></div>
                 </div>
             </div>
         </div>
@@ -152,7 +152,9 @@
     @endif
 
     <!-- Table Section from Stitch -->
-    <div class="card-custom p-0">
+    <div id="table-container">
+        @fragment('table-section')
+        <div class="card-custom p-0">
         <div class="card-header-custom border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
             <div>
                 <span class="text-dark font-weight-700">Daftar Pesanan Bahan Baku Mitra</span>
@@ -284,14 +286,12 @@
                 </div>
             </div>
         </div>
+        @endfragment
     </div>
 </div>
 @endsection
 
 @section('scripts')
-@if(Auth::user()->isOwner())
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-@endif
 <script>
     function toggleCustomDates() {
         const dateFilter = document.getElementById('date_filter').value;
@@ -307,42 +307,125 @@
     }
 
     @if(Auth::user()->isOwner())
-    const ctxPartner = document.getElementById('partnerPurchasesChart').getContext('2d');
-    const partnerChartData = @json($partnerChart);
-    new Chart(ctxPartner, {
-        type: 'line',
-        data: partnerChartData,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom' },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) {
-                                label += ': ';
-                            }
-                            if (context.parsed.y !== null) {
-                                label += 'Rp ' + new Intl.NumberFormat('id-ID').format(context.parsed.y);
-                            }
-                            return label;
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    ticks: {
-                        callback: function(value) {
-                            return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
-                        }
-                    }
+    const partnerChartOptions = {
+        chart: {
+            type: 'area',
+            height: 220,
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            toolbar: { show: false }
+        },
+        stroke: {
+            curve: 'smooth',
+            width: 3,
+            colors: ['#f59e0b']
+        },
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shadeIntensity: 1,
+                opacityFrom: 0.3,
+                opacityTo: 0.05,
+                stops: [0, 90, 100]
+            }
+        },
+        colors: ['#f59e0b'],
+        series: [{
+            name: 'Nominal Pembelian Mitra',
+            data: @json($partnerChart['datasets'][0]['data'] ?? [])
+        }],
+        xaxis: {
+            categories: @json($partnerChart['labels'] ?? []),
+            labels: {
+                style: {
+                    colors: '#64748b',
+                    fontWeight: 500
                 }
             }
+        },
+        yaxis: {
+            labels: {
+                formatter: function(val) {
+                    return 'Rp ' + new Intl.NumberFormat('id-ID', { maximumSignificantDigits: 3 }).format(val);
+                },
+                style: {
+                    colors: '#64748b'
+                }
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: function(val) {
+                    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
+                }
+            }
+        },
+        markers: {
+            size: 4,
+            colors: ['#f59e0b'],
+            strokeColors: '#fff',
+            strokeWidth: 2,
+            hover: { size: 6 }
+        },
+        grid: {
+            borderColor: '#f1f5f9'
+        }
+    };
+
+    window.partnerPurchasesChart = new ApexCharts(document.querySelector("#partnerPurchasesChart"), partnerChartOptions);
+    window.partnerPurchasesChart.render();
+    @endif
+
+    // Intercept form submissions for AJAX
+    const filterForm = document.querySelector('form');
+    if (filterForm) {
+        filterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetchData();
+        });
+    }
+
+    // Intercept pagination clicks
+    document.addEventListener('click', function(e) {
+        const link = e.target.closest('#table-container .pagination a');
+        if (link) {
+            e.preventDefault();
+            fetchData(link.href);
         }
     });
-    @endif
+
+    function fetchData(url = null) {
+        if (!url) {
+            const formData = new FormData(filterForm);
+            const params = new URLSearchParams(formData);
+            url = window.location.pathname + '?' + params.toString();
+        }
+
+        // Push URL state
+        window.history.pushState({}, '', url);
+
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.html) {
+                document.getElementById('table-container').innerHTML = data.html;
+            }
+            if (data.chart_data && window.partnerPurchasesChart) {
+                window.partnerPurchasesChart.updateOptions({
+                    xaxis: {
+                        categories: data.chart_labels
+                    }
+                });
+                window.partnerPurchasesChart.updateSeries([{
+                    name: 'Nominal Pembelian Mitra',
+                    data: data.chart_data
+                }]);
+            }
+        })
+        .catch(err => console.error("Error fetching AJAX:", err));
+    }
 </script>
 @endsection

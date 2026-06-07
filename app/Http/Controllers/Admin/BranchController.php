@@ -36,6 +36,13 @@ class BranchController extends Controller implements HasMiddleware
         }
 
         $branches = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('admin.branches.index', compact('branches'))->fragment('table-section')
+            ]);
+        }
+
         return view('admin.branches.index', compact('branches'));
     }
 

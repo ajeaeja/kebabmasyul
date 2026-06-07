@@ -96,7 +96,9 @@
     </div>
 
     <!-- Main Data Table Card from Stitch -->
-    <div class="card-custom p-0">
+    <div id="table-container">
+        @fragment('table-section')
+        <div class="card-custom p-0">
         <div class="card-header-custom border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
             <div>
                 <span class="text-dark font-weight-700">Daftar Bahan Baku Pusat</span>
@@ -209,6 +211,36 @@
                 </div>
             </div>
         </div>
+        @endfragment
     </div>
 </div>
+
+@section('scripts')
+<script>
+    document.addEventListener('click', function(e) {
+        const link = e.target.closest('#table-container .pagination a');
+        if (link) {
+            e.preventDefault();
+            fetchData(link.href);
+        }
+    });
+
+    function fetchData(url) {
+        window.history.pushState({}, '', url);
+
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.html) {
+                document.getElementById('table-container').innerHTML = data.html;
+            }
+        })
+        .catch(err => console.error("Error fetching AJAX:", err));
+    }
+</script>
+@endsection
 @endsection

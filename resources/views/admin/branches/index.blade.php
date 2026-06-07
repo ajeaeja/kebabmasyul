@@ -51,7 +51,9 @@
     </div>
 
     <!-- Main List Card from Stitch -->
-    <div class="card-custom p-0">
+    <div id="table-container">
+        @fragment('table-section')
+        <div class="card-custom p-0">
         <div class="card-header-custom border-bottom py-3 px-4">
             <span class="text-dark font-weight-700">Daftar Cabang</span>
         </div>
@@ -136,6 +138,58 @@
                 </div>
             </div>
         </div>
+        @endfragment
     </div>
 </div>
+
+@section('scripts')
+<script>
+    const filterForm = document.querySelector('form');
+    if (filterForm) {
+        filterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetchData();
+        });
+    }
+
+    // Auto submit on select change
+    const selectFilters = document.querySelectorAll('form select');
+    selectFilters.forEach(sel => {
+        sel.addEventListener('change', function() {
+            fetchData();
+        });
+    });
+
+    document.addEventListener('click', function(e) {
+        const link = e.target.closest('#table-container .pagination a');
+        if (link) {
+            e.preventDefault();
+            fetchData(link.href);
+        }
+    });
+
+    function fetchData(url = null) {
+        if (!url) {
+            const formData = new FormData(filterForm);
+            const params = new URLSearchParams(formData);
+            url = window.location.pathname + '?' + params.toString();
+        }
+
+        window.history.pushState({}, '', url);
+
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.html) {
+                document.getElementById('table-container').innerHTML = data.html;
+            }
+        })
+        .catch(err => console.error("Error fetching AJAX:", err));
+    }
+</script>
+@endsection
 @endsection

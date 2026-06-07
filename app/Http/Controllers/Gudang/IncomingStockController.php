@@ -30,6 +30,12 @@ class IncomingStockController extends Controller implements HasMiddleware
             ->orderBy('id', 'desc')
             ->paginate(10)
             ->withQueryString();
+
+        if (request()->ajax()) {
+            return view('gudang.incoming_stocks.index', compact('incomingStocks'))
+                ->fragment('table-section');
+        }
+
         return view('gudang.incoming_stocks.index', compact('incomingStocks'));
     }
 
