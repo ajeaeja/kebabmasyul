@@ -13,7 +13,8 @@
 
 <div class="container-fluid p-0">
     <!-- Header Title & Subtitle from Stitch -->
-    <div class="mb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <!-- Header Title & Subtitle from Stitch -->
+    <div class="mb-4 d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-4">
         <div>
             <h4 class="font-weight-800 text-dark mb-1">Persetujuan Edit Data (Approval)</h4>
             <p class="text-muted m-0" style="font-size: 0.9rem;">
@@ -28,51 +29,74 @@
 
     <!-- Dashboard Overview Bento (Small Accents) from Stitch -->
     <div class="row g-4 mb-4">
+        <!-- Card 1: Total Requests -->
         <div class="col-md-3 col-6">
-            <div class="card-custom rounded-xl p-4 border-start border-4 border-danger h-100" style="border-left-color: #b22204 !important;">
-                <div class="d-flex items-center justify-between mb-2">
-                    <span class="text-muted font-weight-700 uppercase tracking-wider" style="font-size: 0.7rem;">Total Request</span>
-                    <span class="material-symbols-outlined text-primary bg-danger bg-opacity-10 p-2 rounded-3" style="color: #b22204 !important;">pending_actions</span>
+            <div class="card-custom p-4 border-start border-4 h-100" style="border-left-color: var(--accent-color) !important;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted font-weight-700 uppercase tracking-wider mb-1" style="font-size: 0.7rem;">TOTAL PENGAJUAN</p>
+                        <h4 class="font-weight-800 text-dark m-0">{{ $totalRequests }}</h4>
+                    </div>
+                    <span class="material-symbols-outlined p-2 rounded-3" style="color: var(--accent-color); background-color: rgba(238, 77, 45, 0.1);">pending_actions</span>
                 </div>
-                <div class="text-3xl font-bold text-on-surface">{{ $totalRequests }}</div>
-                <div class="text-[10px] text-green-600 font-bold mt-2">Seluruh pengajuan</div>
+                <p class="text-muted font-weight-700 mt-3 mb-0" style="font-size: 0.75rem;">
+                    Seluruh riwayat pengajuan
+                </p>
             </div>
         </div>
+
+        <!-- Card 2: Pending Approval -->
         <div class="col-md-3 col-6">
-            <div class="card-custom rounded-xl p-4 border-start border-4 border-warning h-100" style="border-left-color: #ffc107 !important;">
-                <div class="d-flex items-center justify-between mb-2">
-                    <span class="text-muted font-weight-700 uppercase tracking-wider" style="font-size: 0.7rem;">Pending Approval</span>
-                    <span class="material-symbols-outlined text-warning bg-warning bg-opacity-10 p-2 rounded-3" style="color: #ffc107 !important;">hourglass_empty</span>
+            <div class="card-custom p-4 border-start border-4 h-100" style="border-left-color: #ff9800 !important;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted font-weight-700 uppercase tracking-wider mb-1" style="font-size: 0.7rem;">PENDING APPROVAL</p>
+                        <h4 class="font-weight-800 text-warning m-0">{{ $pendingRequests }}</h4>
+                    </div>
+                    <span class="material-symbols-outlined p-2 rounded-3" style="color: #ff9800; background-color: rgba(255, 152, 0, 0.1);">hourglass_empty</span>
                 </div>
-                <div class="text-3xl font-bold text-on-surface">{{ $pendingRequests }}</div>
-                <div class="text-[10px] text-warning font-bold mt-2">Butuh ulasan segera</div>
+                <p class="text-warning font-weight-700 mt-3 mb-0" style="font-size: 0.75rem;">
+                    Butuh ulasan segera
+                </p>
             </div>
         </div>
+
+        <!-- Card 3: Approved -->
         <div class="col-md-3 col-6">
-            <div class="card-custom rounded-xl p-4 border-start border-4 border-success h-100" style="border-left-color: #198754 !important;">
-                <div class="d-flex items-center justify-between mb-2">
-                    <span class="text-muted font-weight-700 uppercase tracking-wider" style="font-size: 0.7rem;">Approved</span>
-                    <span class="material-symbols-outlined text-success bg-success bg-opacity-10 p-2 rounded-3" style="color: #198754 !important;">check_circle</span>
+            <div class="card-custom p-4 border-start border-4 h-100" style="border-left-color: #2e7d32 !important;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted font-weight-700 uppercase tracking-wider mb-1" style="font-size: 0.7rem;">DISETUJUI</p>
+                        <h4 class="font-weight-800 text-success m-0">{{ $approvedRequests }}</h4>
+                    </div>
+                    <span class="material-symbols-outlined p-2 rounded-3" style="color: #2e7d32; background-color: rgba(46, 125, 50, 0.1);">check_circle</span>
                 </div>
-                <div class="text-3xl font-bold text-on-surface">{{ $approvedRequests }}</div>
-                <div class="text-[10px] text-success font-bold mt-2">Telah disetujui</div>
+                <p class="text-success font-weight-700 mt-3 mb-0" style="font-size: 0.75rem;">
+                    Telah disetujui Owner
+                </p>
             </div>
         </div>
+
+        <!-- Card 4: Rejected -->
         <div class="col-md-3 col-6">
-            <div class="card-custom rounded-xl p-4 border-start border-4 border-danger h-100" style="border-left-color: #dc3545 !important;">
-                <div class="d-flex items-center justify-between mb-2">
-                    <span class="text-muted font-weight-700 uppercase tracking-wider" style="font-size: 0.7rem;">Rejected</span>
-                    <span class="material-symbols-outlined text-danger bg-danger bg-opacity-10 p-2 rounded-3">cancel</span>
+            <div class="card-custom p-4 border-start border-4 h-100" style="border-left-color: #c62828 !important;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted font-weight-700 uppercase tracking-wider mb-1" style="font-size: 0.7rem;">DITOLAK / BATAL</p>
+                        <h4 class="font-weight-800 text-danger m-0">{{ $rejectedRequests }}</h4>
+                    </div>
+                    <span class="material-symbols-outlined p-2 rounded-3" style="color: #c62828; background-color: rgba(198, 40, 40, 0.1);">cancel</span>
                 </div>
-                <div class="text-3xl font-bold text-on-surface">{{ $rejectedRequests }}</div>
-                <div class="text-[10px] text-danger font-bold mt-2">Ditolak / Batal</div>
+                <p class="text-danger font-weight-700 mt-3 mb-0" style="font-size: 0.75rem;">
+                    Ditolak atau dibatalkan
+                </p>
             </div>
         </div>
     </div>
 
     <!-- Data Table Card from Stitch -->
     <div class="card-custom rounded-xl overflow-hidden border border-outline-variant/10">
-        <div class="bg-white px-6 py-3 border-b border-outline-variant d-flex items-center justify-between">
+        <div class="bg-white px-6 py-3 border-b border-outline-variant d-flex align-items-center justify-content-between">
             <h4 class="font-title-md text-title-md text-on-surface m-0">Tabel Pengajuan</h4>
         </div>
         <div class="p-0">
@@ -103,13 +127,13 @@
                                 </td>
                                 <td class="py-3.5 px-6">
                                     @if($req->model_type === 'App\\Models\\BranchReport')
-                                        <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-pill text-[11px] font-bold border border-blue-100 uppercase">Laporan Omset</span>
+                                        <span class="bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill font-weight-700 border border-primary border-opacity-20 uppercase" style="font-size: 11px;">Laporan Omset</span>
                                     @elseif($req->model_type === 'App\\Models\\PartnerOrder')
-                                        <span class="bg-warning bg-opacity-10 text-warning-emphasis px-3 py-1 rounded-pill text-[11px] font-bold border border-warning border-opacity-20 uppercase">Pesanan Mitra</span>
+                                        <span class="bg-warning bg-opacity-10 text-warning px-3 py-1 rounded-pill font-weight-700 border border-warning border-opacity-20 uppercase" style="font-size: 11px;">Pesanan Mitra</span>
                                     @elseif($req->model_type === 'App\\Models\\Partner')
-                                        <span class="bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill text-[11px] font-bold border border-primary border-opacity-20 uppercase">Profil Mitra</span>
+                                        <span class="bg-info bg-opacity-10 text-info px-3 py-1 rounded-pill font-weight-700 border border-info border-opacity-20 uppercase" style="font-size: 11px;">Profil Mitra</span>
                                     @else
-                                        <span class="bg-secondary bg-opacity-10 text-secondary px-3 py-1 rounded-pill text-[11px] font-bold border border-secondary border-opacity-20 uppercase">Profil Cabang</span>
+                                        <span class="bg-secondary bg-opacity-10 text-secondary px-3 py-1 rounded-pill font-weight-700 border border-secondary border-opacity-20 uppercase" style="font-size: 11px;">Profil Cabang</span>
                                     @endif
                                 </td>
                                 <td class="py-3.5 px-6 max-w-[250px] text-truncate text-muted" title="{{ $req->reason }}">
