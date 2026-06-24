@@ -1,6 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
+// Temporary Seeder Route (will be deleted after running)
+Route::get('/run-seeder-temp-abc123xyz', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        $output = \Illuminate\Support\Facades\Artisan::output();
+        return 'Seeding sukses! Output:<br><pre>' . $output . '</pre>';
+    } catch (\Exception $e) {
+        return 'Gagal melakukan seeding: ' . $e->getMessage();
+    }
+});
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\PartnerController;
