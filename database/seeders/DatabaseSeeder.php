@@ -15,30 +15,31 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Clear tables to avoid duplicates (Driver-aware for MySQL, PostgreSQL, SQLite)
         $driver = DB::connection()->getDriverName();
-        if ($driver === 'mysql') {
-            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        } elseif ($driver === 'pgsql') {
-            DB::statement("SET session_replication_role = 'replica';");
-        } elseif ($driver === 'sqlite') {
-            DB::statement('PRAGMA foreign_keys = OFF;');
-        }
+        if ($driver === 'pgsql') {
+            // PostgreSQL does not require disabling FK checks if we truncate all tables with CASCADE
+            DB::statement('TRUNCATE edit_requests, branch_reports, partner_order_items, partner_orders, incoming_stocks, raw_materials, branches, partners, users CASCADE;');
+        } else {
+            if ($driver === 'mysql') {
+                DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            } elseif ($driver === 'sqlite') {
+                DB::statement('PRAGMA foreign_keys = OFF;');
+            }
 
-        DB::table('edit_requests')->truncate();
-        DB::table('branch_reports')->truncate();
-        DB::table('partner_order_items')->truncate();
-        DB::table('partner_orders')->truncate();
-        DB::table('incoming_stocks')->truncate();
-        DB::table('raw_materials')->truncate();
-        DB::table('branches')->truncate();
-        DB::table('partners')->truncate();
-        DB::table('users')->truncate();
+            DB::table('edit_requests')->truncate();
+            DB::table('branch_reports')->truncate();
+            DB::table('partner_order_items')->truncate();
+            DB::table('partner_orders')->truncate();
+            DB::table('incoming_stocks')->truncate();
+            DB::table('raw_materials')->truncate();
+            DB::table('branches')->truncate();
+            DB::table('partners')->truncate();
+            DB::table('users')->truncate();
 
-        if ($driver === 'mysql') {
-            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-        } elseif ($driver === 'pgsql') {
-            DB::statement("SET session_replication_role = 'origin';");
-        } elseif ($driver === 'sqlite') {
-            DB::statement('PRAGMA foreign_keys = ON;');
+            if ($driver === 'mysql') {
+                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            } elseif ($driver === 'sqlite') {
+                DB::statement('PRAGMA foreign_keys = ON;');
+            }
         }
 
         // 2. Seed Users
