@@ -5,12 +5,6 @@
 
 @section('content')
 <div class="container-fluid p-0">
-    <div class="mb-3">
-        <a href="{{ route('partners.index') }}" class="btn btn-light rounded-3 font-weight-600">
-            <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar Mitra
-        </a>
-    </div>
-
     <div class="row">
         <!-- Left Column: Profile Card & Document -->
         <div class="col-lg-5 mb-4">
@@ -57,12 +51,10 @@
                             <td class="text-muted font-weight-600 ps-0">Tanggal Join</td>
                             <td class="text-dark">: {{ $partner->join_date ? date('d-m-Y', strtotime($partner->join_date)) : '-' }}</td>
                         </tr>
-                        @if($partner->mou_end_date)
                         <tr>
-                            <td class="text-muted font-weight-600 ps-0">Akhir MOU</td>
-                            <td class="text-danger">: {{ date('d-m-Y', strtotime($partner->mou_end_date)) }}</td>
+                            <td class="text-muted font-weight-600 ps-0">Masa Aktif MOU</td>
+                            <td class="text-success font-weight-600">: Selamanya (Selama aktif membeli bahan baku)</td>
                         </tr>
-                        @endif
                     </table>
 
                     @if($partner->notes)
@@ -116,9 +108,42 @@
         <!-- Right Column: Riwayat Pesanan Placeholder -->
         <div class="col-lg-7 mb-4">
             <div class="card-custom">
-                <div class="card-header-custom d-flex justify-content-between align-items-center">
-                    <span class="text-dark font-weight-700"><i class="bi bi-receipt-cutoff me-2 text-danger"></i>Riwayat Pesanan Bahan Baku</span>
-                    <span class="badge bg-secondary bg-opacity-10 text-secondary">{{ $orders->total() }} Pesanan</span>
+                <div class="card-header-custom d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="text-dark font-weight-700"><i class="bi bi-receipt-cutoff me-2 text-danger"></i>Riwayat Pesanan Bahan Baku</span>
+                        <span class="badge bg-secondary bg-opacity-10 text-secondary">{{ $orders->total() }} Pesanan</span>
+                    </div>
+                    
+                    <form action="{{ route('partners.show', $partner->id) }}" method="GET" class="d-flex align-items-center gap-2">
+                        <select name="filter" class="form-select form-select-sm rounded-3" style="width: auto;" onchange="this.form.submit()">
+                            <option value="" {{ request('filter') === null || request('filter') === '' ? 'selected' : '' }}>Semua Waktu</option>
+                            <option value="today" {{ request('filter') === 'today' ? 'selected' : '' }}>Hari Ini</option>
+                            <option value="last_7_days" {{ request('filter') === 'last_7_days' ? 'selected' : '' }}>7 Hari Terakhir</option>
+                            <option value="last_30_days" {{ request('filter') === 'last_30_days' ? 'selected' : '' }}>Sebulan Terakhir</option>
+                        </select>
+                        <div class="dropdown">
+                            <button class="btn btn-accent btn-sm dropdown-toggle rounded-3 font-weight-700" type="button" id="dropdownExport" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-download me-1"></i> Export
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end rounded-3 shadow-sm" aria-labelledby="dropdownExport" style="font-size: 0.85rem;">
+                                <li>
+                                    <a class="dropdown-item py-2" href="{{ route('generic.export', ['type' => 'partner-orders', 'format' => 'xls', 'partner_id' => $partner->id, 'filter' => request('filter')]) }}">
+                                        <i class="bi bi-file-earmark-excel-fill text-success me-2"></i> Export Excel (.xls)
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" href="{{ route('generic.export', ['type' => 'partner-orders', 'format' => 'doc', 'partner_id' => $partner->id, 'filter' => request('filter')]) }}">
+                                        <i class="bi bi-file-earmark-word-fill text-primary me-2"></i> Export Word (.doc)
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" href="{{ route('generic.export', ['type' => 'partner-orders', 'format' => 'pdf', 'partner_id' => $partner->id, 'filter' => request('filter')]) }}" target="_blank">
+                                        <i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i> Export PDF
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </form>
                 </div>
                 <div class="p-4">
                     <div class="table-responsive">
@@ -127,6 +152,7 @@
                                 <tr class="text-muted" style="font-size: 0.8rem;">
                                     <th>NO. ORDER</th>
                                     <th>TANGGAL</th>
+                                    <th>BAHAN BAKU & QTY</th>
                                     <th class="text-end">TOTAL HARGA</th>
                                     <th class="text-center">STATUS</th>
                                     <th class="text-center">AKSI</th>
@@ -137,6 +163,17 @@
                                     <tr>
                                         <td class="font-weight-700 text-dark">#{{ $order->id }}</td>
                                         <td>{{ date('d-m-Y', strtotime($order->order_date)) }}</td>
+                                        <td>
+                                            <ul class="list-unstyled mb-0" style="font-size: 0.775rem; line-height: 1.3;">
+                                                @foreach($order->items as $item)
+                                                    <li class="text-dark">
+                                                        <i class="bi bi-record-fill text-danger me-1" style="font-size: 0.5rem; vertical-align: middle;"></i>
+                                                        {{ $item->rawMaterial ? $item->rawMaterial->name : 'Bahan Baku' }}: 
+                                                        <span class="font-weight-700">{{ (float)$item->quantity }} {{ $item->rawMaterial ? $item->rawMaterial->unit : '' }}</span>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </td>
                                         <td class="text-end font-weight-600 text-dark">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
                                         <td class="text-center">
                                             @if($order->status === 'selesai')
@@ -155,7 +192,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center text-muted py-4">Belum ada riwayat pesanan bahan baku untuk mitra ini.</td>
+                                        <td colspan="6" class="text-center text-muted py-4">Belum ada riwayat pesanan bahan baku untuk mitra ini.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

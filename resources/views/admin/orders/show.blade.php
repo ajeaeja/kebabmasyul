@@ -5,11 +5,6 @@
 
 @section('content')
 <div class="container-fluid p-0" style="max-width: 900px; margin: 0 auto;">
-    <div class="mb-3 d-flex align-items-center">
-        <a href="{{ route('orders.index') }}" class="btn btn-light font-weight-600 px-3 rounded-3 btn-sm border">
-            <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar
-        </a>
-    </div>
     <div class="row">
         <!-- Main Column: Order Items -->
         <div class="col-md-8 mb-4">
@@ -52,9 +47,19 @@
 
                     @if(!Auth::user()->isGudang())
                         <div class="d-flex justify-content-end mt-4 pt-3 border-top">
-                            <div class="text-end">
-                                <span class="text-muted text-uppercase font-weight-700 d-block" style="font-size: 0.75rem;">Total Tagihan Kemitraan</span>
-                                <h3 class="m-0 font-weight-800 text-danger mt-1">Rp {{ number_format($order->total_price, 0, ',', '.') }}</h3>
+                            <div style="width: 280px;">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted" style="font-size: 0.85rem;">Total Bahan Baku:</span>
+                                    <span class="text-dark font-weight-700">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2 pb-2 border-bottom">
+                                    <span class="text-muted" style="font-size: 0.85rem;">Ongkos Kirim:</span>
+                                    <span class="text-dark font-weight-700">Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted font-weight-700 text-uppercase" style="font-size: 0.75rem;">Total Tagihan:</span>
+                                    <h4 class="m-0 font-weight-800 text-danger">Rp {{ number_format($order->total_price + $order->shipping_cost, 0, ',', '.') }}</h4>
+                                </div>
                             </div>
                         </div>
                     @endif

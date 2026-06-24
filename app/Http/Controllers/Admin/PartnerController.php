@@ -62,7 +62,6 @@ class PartnerController extends Controller implements HasMiddleware
             'address' => 'required|string',
             'jenis_paket' => 'required|in:Silver,Gold,Platinum',
             'join_date' => 'required|date',
-            'mou_end_date' => 'nullable|date|after_or_equal:join_date',
             'status' => 'required|in:active,inactive',
             'notes' => 'nullable|string',
             'mou_document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
@@ -83,14 +82,25 @@ class PartnerController extends Controller implements HasMiddleware
         return redirect()->route('partners.index')->with('success', 'Data mitra baru berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified partner.
-     */
-    public function show(Partner $partner)
+    public function show(Partner $partner, Request $request)
     {
-        $orders = $partner->orders()->orderBy('id', 'desc')->paginate(5);
+        $query = $partner->orders()->with('items.rawMaterial');
+
+        if ($request->filled('filter')) {
+            if ($request->filter === 'today') {
+                $query->whereDate('order_date', today());
+            } elseif ($request->filter === 'last_7_days') {
+                $query->where('order_date', '>=', now()->subDays(7)->toDateString());
+            } elseif ($request->filter === 'last_30_days') {
+                $query->where('order_date', '>=', now()->subDays(30)->toDateString());
+            }
+        }
+
+        $orders = $query->orderBy('id', 'desc')->paginate(5)->withQueryString();
         return view('admin.partners.show', compact('partner', 'orders'));
     }
+
+
 
     /**
      * Show the form for editing the specified partner.
@@ -119,11 +129,9 @@ class PartnerController extends Controller implements HasMiddleware
         // Keep existing path by default
         $validated['mou_path'] = $partner->mou_path;
 
-        // Enforce 24-hour edit limit logic
         $user = Auth::user();
-        $isOlderThan24Hours = $partner->created_at->diffInHours(now()) > 24;
 
-        if (!$user->isOwner() && $isOlderThan24Hours) {
+        if (!$user->isOwner()) {
             $request->validate([
                 'edit_reason' => 'required|string|min:5',
             ], [

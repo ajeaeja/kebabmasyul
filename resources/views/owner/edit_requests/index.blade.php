@@ -11,7 +11,7 @@
                 <span class="text-dark font-weight-700">Daftar Pengajuan Koreksi Data</span>
                 <p class="m-0 text-muted" style="font-size: 0.8rem; font-weight: 400;">
                     @if(Auth::user()->isOwner())
-                        Tinjau dan setujui atau tolak permintaan edit data dari Admin Utama.
+                        Tinjau dan setujui atau tolak permintaan edit data dari Admin Utama atau Tim Gudang.
                     @else
                         Daftar pengajuan edit data yang Anda kirimkan ke Owner.
                     @endif
@@ -24,7 +24,7 @@
                     <thead>
                         <tr class="text-muted" style="font-size: 0.8rem;">
                             <th>ID</th>
-                            <th>PEMOHON (ADMIN)</th>
+                            <th>PEMOHON</th>
                             <th>TIPE DATA</th>
                             <th>ALASAN KOREKSI</th>
                             <th>TANGGAL PENGAJUAN</th>
@@ -37,7 +37,7 @@
                             <tr style="font-size: 0.875rem;">
                                 <td>#{{ $req->id }}</td>
                                 <td class="font-weight-600 text-dark">
-                                    {{ $req->user ? $req->user->name : 'Deleted Admin' }}
+                                    {{ $req->user ? $req->user->name : 'Deleted Staf' }}
                                 </td>
                                 <td>
                                     @if($req->model_type === 'App\\Models\\BranchReport')
@@ -46,6 +46,10 @@
                                         <span class="badge bg-warning bg-opacity-15 text-warning-emphasis">Pesanan Mitra</span>
                                     @elseif($req->model_type === 'App\\Models\\Partner')
                                         <span class="badge bg-primary bg-opacity-10 text-primary">Profil Mitra</span>
+                                    @elseif($req->model_type === 'App\\Models\\RawMaterial' || $req->model_type === 'App\Models\RawMaterial')
+                                        <span class="badge bg-info bg-opacity-10 text-info">Stok Bahan Baku</span>
+                                    @elseif($req->model_type === 'App\\Models\\IncomingStock' || $req->model_type === 'App\Models\IncomingStock')
+                                        <span class="badge bg-dark bg-opacity-10 text-dark">Stok Masuk</span>
                                     @else
                                         <span class="badge bg-secondary bg-opacity-10 text-secondary">Profil Cabang</span>
                                     @endif

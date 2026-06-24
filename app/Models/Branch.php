@@ -10,7 +10,6 @@ class Branch extends Model
         'name',
         'address',
         'pengelola_cabang',
-        'type', // 'internal' or 'mitra'
         'opened_date',
         'notes',
         'status',

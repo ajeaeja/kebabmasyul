@@ -13,7 +13,7 @@
                 <p class="m-0 text-muted d-none d-md-block" style="font-size: 0.8rem; font-weight: 400;">Bahan baku utama untuk operasional outlet kebab.</p>
             </div>
             <div class="d-flex gap-2 align-items-center">
-                @if(Auth::user()->isGudang())
+                @if(Auth::user()->isGudang() || Auth::user()->isOwner())
                     <a href="{{ route('raw-materials.create') }}" class="btn btn-accent rounded-3 font-weight-700 px-3 py-2 d-flex align-items-center justify-content-center" title="Tambah Bahan Baku">
                         <i class="bi bi-plus-lg me-md-1"></i> <span class="d-none d-md-inline">Tambah Bahan Baku</span>
                     </a>
@@ -45,7 +45,7 @@
                             @endif
                             <th class="text-center">KONDISI STOK</th>
                             <th class="text-center">STATUS AKTIF</th>
-                            @if(Auth::user()->isGudang())
+                            @if(Auth::user()->isGudang() || Auth::user()->isOwner())
                                 <th class="text-center" style="width: 150px;">AKSI</th>
                             @endif
                         </tr>
@@ -86,7 +86,7 @@
                                         <span class="badge bg-danger bg-opacity-10 text-danger badge-pill-custom">Nonaktif</span>
                                     @endif
                                 </td>
-                                @if(Auth::user()->isGudang())
+                                @if(Auth::user()->isGudang() || Auth::user()->isOwner())
                                     <td class="text-center">
                                         <div class="d-flex gap-2 justify-content-center">
                                             <a href="{{ route('raw-materials.edit', $material->id) }}" class="btn btn-sm btn-outline-primary border-0 rounded-circle" title="Edit Data">

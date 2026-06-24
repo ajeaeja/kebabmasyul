@@ -5,11 +5,6 @@
 
 @section('content')
 <div class="container-fluid p-0" style="max-width: 800px; margin: 0 auto;">
-    <div class="mb-3">
-        <a href="{{ route('branches.index') }}" class="btn btn-light rounded-3 font-weight-600">
-            <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar
-        </a>
-    </div>
     <div class="card-custom">
         <div class="card-header-custom">
             <span class="text-dark font-weight-700">Form Koreksi Cabang Kedai</span>
@@ -73,10 +68,10 @@
                 </div>
 
                 <!-- Admin Approval Requirement Fields -->
-                @if(Auth::user()->isAdmin() && $branch->created_at->diffInHours(now()) > 24)
+                @if(Auth::user()->isAdmin())
                     <div class="card bg-warning bg-opacity-10 border border-warning border-opacity-25 rounded-3 p-3 mb-4">
                         <h6 class="font-weight-700 text-dark mb-2"><i class="bi bi-shield-lock-fill text-warning me-1"></i>Persetujuan Owner Diperlukan</h6>
-                        <p class="text-muted m-0 mb-3" style="font-size: 0.8rem;">Anda bertindak sebagai Admin. Perubahan data cabang ini harus diajukan terlebih dahulu ke Owner pusat untuk mendapatkan persetujuan karena data dibuat lebih dari 24 jam yang lalu.</p>
+                        <p class="text-muted m-0 mb-3" style="font-size: 0.8rem;">Anda bertindak sebagai Admin. Perubahan data cabang ini harus diajukan terlebih dahulu ke Owner pusat untuk mendapatkan persetujuan.</p>
                         
                         <label for="edit_reason" class="form-label font-weight-700 text-dark">Alasan Pengajuan Koreksi Data Cabang</label>
                         <textarea class="form-control bg-white @error('edit_reason') is-invalid @enderror" id="edit_reason" name="edit_reason" rows="2" placeholder="Contoh: Koreksi penulisan nama pengelola cabang yang salah dari WA..." required>{{ old('edit_reason') }}</textarea>
@@ -89,7 +84,7 @@
                 <div class="d-flex gap-2 justify-content-end border-top pt-3">
                     <a href="{{ route('branches.index') }}" class="btn btn-light font-weight-600 px-4 rounded-3">Batal</a>
                     
-                    @if(Auth::user()->isAdmin() && $branch->created_at->diffInHours(now()) > 24)
+                    @if(Auth::user()->isAdmin())
                         <button type="submit" class="btn btn-warning px-4 rounded-3 text-dark font-weight-600">Ajukan Edit ke Owner</button>
                     @else
                         <button type="submit" class="btn btn-accent px-4 rounded-3">Perbarui Data Sekarang</button>

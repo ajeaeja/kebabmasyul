@@ -317,11 +317,11 @@
 
                 @if($user && ($user->isOwner() || $user->isAdmin()))
                     <a href="{{ route('branch-reports.index') }}" class="nav-link-custom {{ Request::is('branch-reports*') ? 'active' : '' }}">
-                        <i class="bi bi-cash-stack"></i> Laporan Omset
+                        <i class="bi bi-cash-stack"></i> Pendapatan Penjualan
                     </a>
                 @endif
 
-                @if($user && ($user->isOwner() || $user->isAdmin()))
+                @if($user && ($user->isOwner() || $user->isAdmin() || $user->isGudang()))
                     <div class="sidebar-section-title">Persetujuan</div>
                     <a href="{{ route('edit-requests.index') }}" class="nav-link-custom {{ Request::is('edit-requests*') ? 'active' : '' }}">
                         <i class="bi bi-shield-check-fill"></i> Edit Approval

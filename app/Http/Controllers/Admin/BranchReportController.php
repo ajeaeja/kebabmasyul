@@ -66,12 +66,8 @@ class BranchReportController extends Controller implements HasMiddleware
             $current = strtotime('-1 day', $current);
         }
 
-        // Fetch active branches (or filtered branch)
-        if ($request->filled('branch_id')) {
-            $branchesQuery = Branch::where('id', $request->branch_id);
-        } else {
-            $branchesQuery = Branch::where('status', 'active');
-        }
+        // Fetch active branches
+        $branchesQuery = Branch::where('status', 'active');
         $activeBranches = $branchesQuery->orderBy('name', 'asc')->get();
 
         // Fetch reports for these branches on these dates
@@ -113,97 +109,34 @@ class BranchReportController extends Controller implements HasMiddleware
         
         $branches = Branch::orderBy('name', 'asc')->get();
 
-        // Calculate chart data for internal branch revenue (dynamic based on filter)
-        $labels = [];
-        $dateRanges = [];
+        // Calculate comparative table data per branch for the filtered date range
+        $branchSummaries = [];
+        $chronologicalDates = array_reverse($dates);
+        foreach ($activeBranches as $branch) {
+            $summary = BranchReport::where('branch_id', $branch->id)
+                ->whereBetween('report_date', [$startDate, $endDate])
+                ->selectRaw('SUM(cash_setoran) as total_cash, SUM(qris_setoran) as total_qris, SUM(omset) as total_omset, SUM(portions_sold) as total_portions, COUNT(id) as report_count')
+                ->first();
 
-        if ($filter === 'today') {
-            $labels[] = date('d M Y');
-            $dateRanges[] = [
-                'start' => date('Y-m-d') . ' 00:00:00',
-                'end' => date('Y-m-d') . ' 23:59:59',
+            $dailyTrend = [];
+            foreach ($chronologicalDates as $d) {
+                $key = $branch->id . '_' . $d;
+                $report = isset($dbReports[$key]) ? $dbReports[$key]->first() : null;
+                $dailyTrend[] = $report ? (float)$report->omset : 0.0;
+            }
+
+            $branchSummaries[] = (object) [
+                'branch' => $branch,
+                'total_cash' => $summary->total_cash ?: 0,
+                'total_qris' => $summary->total_qris ?: 0,
+                'total_omset' => $summary->total_omset ?: 0,
+                'total_portions' => $summary->total_portions ?: 0,
+                'avg_omset' => $summary->report_count > 0 ? ($summary->total_omset / $summary->report_count) : 0,
+                'daily_trend' => $dailyTrend,
             ];
-        } elseif ($filter === 'yesterday') {
-            $labels[] = date('d M Y', strtotime('-1 day'));
-            $dateRanges[] = [
-                'start' => date('Y-m-d', strtotime('-1 day')) . ' 00:00:00',
-                'end' => date('Y-m-d', strtotime('-1 day')) . ' 23:59:59',
-            ];
-        } elseif ($filter === 'last_7_days') {
-            for ($i = 6; $i >= 0; $i--) {
-                $d = date('Y-m-d', strtotime("-$i days"));
-                $labels[] = date('d M', strtotime($d));
-                $dateRanges[] = [
-                    'start' => $d . ' 00:00:00',
-                    'end' => $d . ' 23:59:59',
-                ];
-            }
-        } elseif ($filter === 'last_30_days') {
-            for ($i = 29; $i >= 0; $i--) {
-                $d = date('Y-m-d', strtotime("-$i days"));
-                $labels[] = date('d M', strtotime($d));
-                $dateRanges[] = [
-                    'start' => $d . ' 00:00:00',
-                    'end' => $d . ' 23:59:59',
-                ];
-            }
-        } elseif ($filter === 'custom' && $request->filled('start_date') && $request->filled('end_date')) {
-            $start = strtotime($request->start_date);
-            $end = strtotime($request->end_date);
-            $diff = ($end - $start) / 86400;
-            if ($diff < 0) {
-                $filter = 'monthly';
-            } else {
-                for ($i = 0; $i <= $diff; $i++) {
-                    $d = date('Y-m-d', strtotime("+$i days", $start));
-                    $labels[] = date('d M', strtotime($d));
-                    $dateRanges[] = [
-                        'start' => $d . ' 00:00:00',
-                        'end' => $d . ' 23:59:59',
-                    ];
-                }
-            }
-        } else {
-            $filter = 'monthly';
         }
 
-        if ($filter === 'monthly') {
-            for ($i = 5; $i >= 0; $i--) {
-                $monthStr = date('Y-m', strtotime("-$i months"));
-                $labels[] = date('M Y', strtotime($monthStr . '-01'));
-                $dateRanges[] = [
-                    'start' => $monthStr . '-01 00:00:00',
-                    'end' => date('Y-m-t', strtotime($monthStr . '-01')) . ' 23:59:59',
-                ];
-            }
-        }
-
-        $chartBranchRevenue = [];
-        foreach ($dateRanges as $range) {
-            $sum = BranchReport::whereHas('branch')
-                ->whereBetween('report_date', [substr($range['start'], 0, 10), substr($range['end'], 0, 10)])
-                ->when($request->filled('branch_id'), function($q) use ($request) {
-                    return $q->where('branch_reports.branch_id', $request->branch_id);
-                })
-                ->sum('omset');
-            $chartBranchRevenue[] = (float) $sum;
-        }
-
-        $chartData = [
-            'labels' => $labels,
-            'datasets' => [
-                [
-                    'label' => 'Total Omset Cabang',
-                    'data' => $chartBranchRevenue,
-                    'borderColor' => '#10b981',
-                    'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
-                    'tension' => 0.3,
-                    'fill' => true
-                ]
-            ]
-        ];
-
-        return view('admin.branch_reports.index', compact('reports', 'branches', 'chartData'));
+        return view('admin.branch_reports.index', compact('reports', 'branches', 'branchSummaries'));
     }
 
     /**
@@ -297,11 +230,10 @@ class BranchReportController extends Controller implements HasMiddleware
             return back()->withErrors(['report_date' => 'Sudah ada laporan omset lain untuk cabang dan tanggal tersebut.'])->withInput();
         }
 
-        // Enforce 24-hour edit limit logic
         $user = Auth::user();
-        $isOlderThan24Hours = $branchReport->created_at->diffInHours(now()) > 24;
+        $isWithin24Hours = $branchReport->report_date && \Carbon\Carbon::parse($branchReport->report_date)->diffInHours(now()) < 24;
 
-        if (!$user->isOwner() && $isOlderThan24Hours) {
+        if (!$user->isOwner() && !$isWithin24Hours) {
             $request->validate([
                 'edit_reason' => 'required|string|min:5',
             ], [

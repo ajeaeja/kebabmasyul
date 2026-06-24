@@ -59,133 +59,79 @@ class PartnerOrderController extends Controller implements HasMiddleware
         }
 
         // Filter by date range preset / custom
-        if ($request->filled('date_filter')) {
-            $filter = $request->date_filter;
-            if ($filter === 'today') {
-                $query->whereDate('order_date', date('Y-m-d'));
-            } elseif ($filter === 'last_7_days') {
-                $query->whereBetween('order_date', [date('Y-m-d', strtotime('-6 days')), date('Y-m-d')]);
-            } elseif ($filter === 'last_30_days') {
-                $query->whereBetween('order_date', [date('Y-m-d', strtotime('-29 days')), date('Y-m-d')]);
-            } elseif ($filter === 'custom' && $request->filled('start_date') && $request->filled('end_date')) {
-                $query->whereBetween('order_date', [$request->start_date, $request->end_date]);
-            }
-        }
-
-        $orders = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
-
-        // Calculate chart data for partner purchases (dynamic based on filter)
-        $labels = [];
-        $dateRanges = [];
+        $startDate = null;
+        $endDate = null;
         $filter = $request->input('date_filter');
 
         if ($filter === 'today') {
-            $labels[] = date('d M Y');
-            $dateRanges[] = [
-                'start' => date('Y-m-d') . ' 00:00:00',
-                'end' => date('Y-m-d') . ' 23:59:59',
-            ];
+            $startDate = date('Y-m-d');
+            $endDate = date('Y-m-d');
         } elseif ($filter === 'last_7_days') {
-            for ($i = 6; $i >= 0; $i--) {
-                $d = date('Y-m-d', strtotime("-$i days"));
-                $labels[] = date('d M', strtotime($d));
-                $dateRanges[] = [
-                    'start' => $d . ' 00:00:00',
-                    'end' => $d . ' 23:59:59',
-                ];
-            }
+            $startDate = date('Y-m-d', strtotime('-6 days'));
+            $endDate = date('Y-m-d');
         } elseif ($filter === 'last_30_days') {
-            for ($i = 29; $i >= 0; $i--) {
-                $d = date('Y-m-d', strtotime("-$i days"));
-                $labels[] = date('d M', strtotime($d));
-                $dateRanges[] = [
-                    'start' => $d . ' 00:00:00',
-                    'end' => $d . ' 23:59:59',
-                ];
-            }
+            $startDate = date('Y-m-d', strtotime('-29 days'));
+            $endDate = date('Y-m-d');
         } elseif ($filter === 'custom' && $request->filled('start_date') && $request->filled('end_date')) {
-            $start = strtotime($request->start_date);
-            $end = strtotime($request->end_date);
-            $diff = ($end - $start) / 86400;
-            if ($diff < 0) {
-                $filter = 'monthly';
-            } else {
-                for ($i = 0; $i <= $diff; $i++) {
-                    $d = date('Y-m-d', strtotime("+$i days", $start));
-                    $labels[] = date('d M', strtotime($d));
-                    $dateRanges[] = [
-                        'start' => $d . ' 00:00:00',
-                        'end' => $d . ' 23:59:59',
-                    ];
-                }
-            }
+            $startDate = $request->start_date;
+            $endDate = $request->end_date;
         } else {
-            $filter = 'monthly';
+            $minDate = PartnerOrder::min('order_date');
+            $startDate = $minDate ?: date('Y-m-d', strtotime('-29 days'));
+            $endDate = date('Y-m-d');
         }
 
-        if ($filter === 'monthly') {
-            for ($i = 5; $i >= 0; $i--) {
-                $monthStr = date('Y-m', strtotime("-$i months"));
-                $labels[] = date('M Y', strtotime($monthStr . '-01'));
-                $dateRanges[] = [
-                    'start' => $monthStr . '-01 00:00:00',
-                    'end' => date('Y-m-t', strtotime($monthStr . '-01')) . ' 23:59:59',
-                ];
-            }
+        // Apply date filter to orders query
+        $query->whereBetween('order_date', [$startDate, $endDate]);
+
+        $orders = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
+
+        // Generate chronological dates range
+        $dates = [];
+        $current = strtotime($endDate);
+        $start = strtotime($startDate);
+        while ($current >= $start) {
+            $dates[] = date('Y-m-d', $current);
+            $current = strtotime('-1 day', $current);
         }
+        $chronologicalDates = array_reverse($dates);
 
-        $chartPartnerPurchases = [];
-        foreach ($dateRanges as $range) {
-            $sumQuery = DB::table('partner_order_items')
-                ->join('partner_orders', 'partner_orders.id', '=', 'partner_order_items.partner_order_id');
+        $activePartners = Partner::where('status', 'active')->orderBy('name', 'asc')->get();
 
-            if ($request->filled('search')) {
-                $search = $request->search;
-                $sumQuery->where(function($q) use ($search) {
-                    $q->where('partner_orders.id', 'like', '%' . $search . '%')
-                      ->orExists(function($sub) use ($search) {
-                          $sub->select(DB::raw(1))
-                              ->from('partners')
-                              ->whereColumn('partners.id', '=', 'partner_orders.partner_id')
-                              ->where('partners.name', 'like', '%' . $search . '%');
-                      });
-                });
+        // Load all orders for these partners within range
+        $rangeOrders = PartnerOrder::whereIn('partner_id', $activePartners->pluck('id'))
+            ->whereBetween('order_date', [$startDate, $endDate])
+            ->get()
+            ->groupBy(function($item) {
+                return $item->partner_id . '_' . $item->order_date;
+            });
+
+        $partnerSummaries = [];
+        foreach ($activePartners as $partner) {
+            $totalPurchases = 0.0;
+            $dailyTrend = [];
+            
+            foreach ($chronologicalDates as $d) {
+                $key = $partner->id . '_' . $d;
+                $dayOrders = isset($rangeOrders[$key]) ? $rangeOrders[$key] : collect();
+                $dayTotal = 0.0;
+                foreach ($dayOrders as $ord) {
+                    $dayTotal += (float)$ord->total_price + (float)$ord->shipping_cost;
+                }
+                $dailyTrend[] = $dayTotal;
+                $totalPurchases += $dayTotal;
             }
 
-            if ($request->filled('status')) {
-                $sumQuery->where('partner_orders.status', $request->status);
-            }
-
-            if ($request->filled('partner_id')) {
-                $sumQuery->where('partner_orders.partner_id', $request->partner_id);
-            }
-
-            if ($request->filled('payment_status') && !Auth::user()->isGudang()) {
-                $sumQuery->where('partner_orders.payment_status', $request->payment_status);
-            }
-
-            $sum = $sumQuery->whereBetween('partner_orders.order_date', [substr($range['start'], 0, 10), substr($range['end'], 0, 10)])
-                ->sum(DB::raw('partner_order_items.quantity * partner_order_items.price'));
-            $chartPartnerPurchases[] = (float) $sum;
+            $partnerSummaries[] = (object) [
+                'partner' => $partner,
+                'total_purchases' => $totalPurchases,
+                'daily_trend' => $dailyTrend,
+            ];
         }
-
-        $partnerChart = [
-            'labels' => $labels,
-            'datasets' => [
-                [
-                    'label' => 'Nominal Pembelian Mitra',
-                    'data' => $chartPartnerPurchases,
-                    'borderColor' => '#f59e0b',
-                    'backgroundColor' => 'rgba(245, 158, 11, 0.1)',
-                    'tension' => 0.3,
-                    'fill' => true
-                ]
-            ]
-        ];
 
         $partners = Partner::where('status', 'active')->orderBy('name', 'asc')->get();
 
-        return view('admin.orders.index', compact('orders', 'partnerChart', 'partners'));
+        return view('admin.orders.index', compact('orders', 'partners', 'partnerSummaries'));
     }
 
     /**
@@ -312,8 +258,7 @@ class PartnerOrderController extends Controller implements HasMiddleware
         if (!$user->isAdmin() && !$user->isOwner()) {
             abort(403, 'Hanya Admin atau Owner yang dapat mengedit pesanan.');
         }
-
-        $isOlderThan24Hours = $order->created_at->diffInHours(now()) > 24;
+        $isWithin24Hours = $order->order_date && \Carbon\Carbon::parse($order->order_date)->diffInHours(now()) < 24;
 
         $rules = [
             'order_date' => 'required|date',
@@ -327,7 +272,7 @@ class PartnerOrderController extends Controller implements HasMiddleware
             'items.*.quantity' => 'required|numeric|min:0.01',
         ];
 
-        if (!$user->isOwner() && $isOlderThan24Hours) {
+        if (!$user->isOwner() && !$isWithin24Hours) {
             $rules['edit_reason'] = 'required|string|min:5';
         }
 
@@ -353,7 +298,7 @@ class PartnerOrderController extends Controller implements HasMiddleware
             $totalPrice += ($price * $quantity);
         }
 
-        if (!$user->isOwner() && $isOlderThan24Hours) {
+        if (!$user->isOwner() && !$isWithin24Hours) {
             // EditRequest flow
             $originalItems = [];
             foreach ($order->items as $item) {

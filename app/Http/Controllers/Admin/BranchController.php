@@ -61,8 +61,6 @@ class BranchController extends Controller implements HasMiddleware
             'pengelola_cabang' => 'nullable|string|max:255',
         ]);
 
-        $validated['type'] = 'internal';
-
         Branch::create($validated);
 
         return redirect()->route('branches.index')->with('success', 'Data cabang baru berhasil ditambahkan.');
@@ -99,13 +97,9 @@ class BranchController extends Controller implements HasMiddleware
             'pengelola_cabang' => 'nullable|string|max:255',
         ]);
 
-        $validated['type'] = 'internal';
-
-        // Enforce 24-hour edit limit logic
         $user = Auth::user();
-        $isOlderThan24Hours = $branch->created_at->diffInHours(now()) > 24;
 
-        if (!$user->isOwner() && $isOlderThan24Hours) {
+        if (!$user->isOwner()) {
             $request->validate([
                 'edit_reason' => 'required|string|min:5',
             ], [

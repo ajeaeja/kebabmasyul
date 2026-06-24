@@ -5,11 +5,6 @@
 
 @section('content')
 <div class="container-fluid p-0" style="max-width: 800px; margin: 0 auto;">
-    <div class="mb-3">
-        <a href="{{ route('partners.index') }}" class="btn btn-light rounded-3 font-weight-600">
-            <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar
-        </a>
-    </div>
     <div class="card-custom">
         <div class="card-header-custom">
             <span class="text-dark font-weight-700">Form Koreksi Profil Mitra</span>
@@ -54,7 +49,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-6 mb-3">
                         <label for="jenis_paket" class="form-label font-weight-600">Jenis Paket Usaha</label>
                         <select class="form-select @error('jenis_paket') is-invalid @enderror" id="jenis_paket" name="jenis_paket" required>
                             <option value="Silver" {{ old('jenis_paket', $partner->jenis_paket) === 'Silver' ? 'selected' : '' }}>Silver</option>
@@ -66,18 +61,11 @@
                         @enderror
                     </div>
 
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-6 mb-3">
                         <label for="join_date" class="form-label font-weight-600">Tanggal Mulai Kerja Sama</label>
                         <input type="date" class="form-control @error('join_date') is-invalid @enderror" id="join_date" name="join_date" value="{{ old('join_date', $partner->join_date) }}" required>
+                        <small class="text-muted" style="font-size: 0.75rem;">MOU berlaku selamanya selama mitra aktif membeli bahan baku di pusat.</small>
                         @error('join_date')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label for="mou_end_date" class="form-label font-weight-600">Tanggal Akhir MOU</label>
-                        <input type="date" class="form-control @error('mou_end_date') is-invalid @enderror" id="mou_end_date" name="mou_end_date" value="{{ old('mou_end_date', $partner->mou_end_date) }}">
-                        @error('mou_end_date')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -118,10 +106,10 @@
                 </div>
 
                 <!-- Admin Approval Requirement Fields -->
-                @if(Auth::user()->isAdmin() && $partner->created_at->diffInHours(now()) > 24)
+                @if(Auth::user()->isAdmin())
                     <div class="card bg-warning bg-opacity-10 border border-warning border-opacity-25 rounded-3 p-3 mb-4">
                         <h6 class="font-weight-700 text-dark mb-2"><i class="bi bi-shield-lock-fill text-warning me-1"></i>Persetujuan Owner Diperlukan</h6>
-                        <p class="text-muted m-0 mb-3" style="font-size: 0.8rem;">Anda bertindak sebagai Admin. Perubahan data ini harus diajukan terlebih dahulu ke Owner pusat untuk mendapatkan persetujuan karena data dibuat lebih dari 24 jam yang lalu.</p>
+                        <p class="text-muted m-0 mb-3" style="font-size: 0.8rem;">Anda bertindak sebagai Admin. Perubahan data ini harus diajukan terlebih dahulu ke Owner pusat untuk mendapatkan persetujuan.</p>
                         
                         <label for="edit_reason" class="form-label font-weight-700 text-dark">Alasan Pengajuan Koreksi Data</label>
                         <textarea class="form-control bg-white @error('edit_reason') is-invalid @enderror" id="edit_reason" name="edit_reason" rows="2" placeholder="Contoh: Koreksi nomor telpon salah input dari WA..." required>{{ old('edit_reason') }}</textarea>
@@ -134,7 +122,7 @@
                 <div class="d-flex gap-2 justify-content-end border-top pt-3">
                     <a href="{{ route('partners.index') }}" class="btn btn-light font-weight-600 px-4 rounded-3">Batal</a>
                     
-                    @if(Auth::user()->isAdmin() && $partner->created_at->diffInHours(now()) > 24)
+                    @if(Auth::user()->isAdmin())
                         <button type="submit" class="btn btn-warning px-4 rounded-3 text-dark font-weight-600">Ajukan Edit ke Owner</button>
                     @else
                         <button type="submit" class="btn btn-accent px-4 rounded-3">Perbarui Data Sekarang</button>

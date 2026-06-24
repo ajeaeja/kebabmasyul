@@ -28,7 +28,16 @@ class IncomingStockController extends Controller implements HasMiddleware
         $incomingStocks = IncomingStock::with('rawMaterial')
             ->orderBy('incoming_date', 'desc')
             ->orderBy('id', 'desc')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
+
+        if (request()->ajax()) {
+            return response()->json([
+                'html' => view('gudang.incoming_stocks.fragments.table', compact('incomingStocks'))
+                    ->render(),
+            ]);
+        }
+
         return view('gudang.incoming_stocks.index', compact('incomingStocks'));
     }
 
@@ -80,9 +89,9 @@ class IncomingStockController extends Controller implements HasMiddleware
         ]);
 
         $user = Auth::user();
+        $isWithin24Hours = $incomingStock->incoming_date && \Carbon\Carbon::parse($incomingStock->incoming_date)->diffInHours(now()) < 24;
 
-        // 24 hour rule: if user is not Owner and data is older than 24 hours
-        if (!$user->isOwner() && $incomingStock->created_at->diffInHours(now()) > 24) {
+        if (!$user->isOwner() && !$isWithin24Hours) {
             $request->validate([
                 'edit_reason' => 'required|string|min:5',
             ], [

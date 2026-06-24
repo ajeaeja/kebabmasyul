@@ -149,6 +149,40 @@ class ExportController extends Controller
                     $s->notes ?: '-'
                 ];
             }
+        } elseif ($type === 'partner-orders') {
+            $partner = \App\Models\Partner::findOrFail(request()->partner_id);
+            $title = 'Laporan Pesanan Bahan Baku - ' . $partner->name;
+            $headers = ['No Order', 'Tanggal Order', 'Bahan Baku & Qty', 'Total Tagihan', 'Status Pesanan'];
+
+            $query = $partner->orders()->with('items.rawMaterial');
+
+            if (request()->filled('filter')) {
+                $filter = request()->filter;
+                if ($filter === 'today') {
+                    $query->whereDate('order_date', today());
+                } elseif ($filter === 'last_7_days') {
+                    $query->where('order_date', '>=', now()->subDays(7)->toDateString());
+                } elseif ($filter === 'last_30_days') {
+                    $query->where('order_date', '>=', now()->subDays(30)->toDateString());
+                }
+            }
+
+            $orders = $query->orderBy('id', 'desc')->get();
+            foreach ($orders as $o) {
+                $itemsStr = '';
+                foreach ($o->items as $item) {
+                    $itemsStr .= ($item->rawMaterial ? $item->rawMaterial->name : 'Bahan Baku') . ' (' . (float)$item->quantity . ' ' . ($item->rawMaterial ? $item->rawMaterial->unit : '') . '), ';
+                }
+                $itemsStr = rtrim($itemsStr, ', ');
+
+                $data[] = [
+                    '#' . $o->id,
+                    date('d-m-Y', strtotime($o->order_date)),
+                    $itemsStr,
+                    'Rp ' . number_format($o->total_price, 0, ',', '.'),
+                    ucfirst(str_replace('_', ' ', $o->status))
+                ];
+            }
         } else {
             abort(404, 'Tipe laporan tidak ditemukan.');
         }

@@ -17,7 +17,7 @@
                         </div>
                         <div>
                             <h6 class="text-dark font-weight-800 m-0" style="font-size: 0.85rem;">🔴 Laporan Harian Terlambat</h6>
-                            <p class="text-muted mt-1 mb-0" style="font-size: 0.725rem;">Ada cabang yang belum menyetor omset hari ini. Klik untuk melihat detail.</p>
+                            <p class="text-muted mt-1 mb-0" style="font-size: 0.725rem;">Ada cabang yang belum menyetor pendapatan hari ini. Klik untuk melihat detail.</p>
                         </div>
                     </div>
                 </div>
@@ -32,7 +32,7 @@
                         <i class="bi bi-exclamation-octagon-fill fs-4"></i>
                     </div>
                     <div>
-                        <h5 class="text-dark font-weight-800 m-0">🔴 Peringatan Laporan Harian Terlambat</h5>
+                        <h5 class="text-dark font-weight-800 m-0">🔴 Monitoring Keterlambatan Laporan Cabang</h5>
                         <p class="text-muted mt-1 mb-2" style="font-size: 0.9rem;">Cabang internal berikut belum menyetorkan/menginput laporan harian penjualan untuk hari ini:</p>
                         <div class="d-flex flex-wrap gap-2">
                             @foreach($missingReportBranches as $b)
@@ -49,21 +49,33 @@
 
     <!-- Top KPI Row -->
     <div class="row">
-        <!-- Card: Omset Cabang Internal -->
+        <!-- Card: Pendapatan Penjualan Hari Ini -->
         <div class="col-6 col-md-6 mb-4">
             <a href="{{ route('branch-reports.index') }}" class="text-decoration-none">
                 <div class="card-custom kpi-card-custom h-100 p-4 d-flex flex-column justify-content-between" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3 kpi-header">
-                            <span class="text-white-50 text-uppercase font-weight-700 kpi-card-title" style="font-size: 0.75rem; letter-spacing: 0.5px;">Total Omset Internal</span>
+                            <span class="text-white-50 text-uppercase font-weight-700 kpi-card-title" style="font-size: 0.75rem; letter-spacing: 0.5px;">Pendapatan Penjualan Hari Ini</span>
                             <div class="bg-success bg-opacity-20 text-white rounded-circle p-2 d-flex align-items-center justify-content-center kpi-icon-container" style="width: 38px; height: 38px; flex-shrink: 0;">
                                 <i class="bi bi-cash-stack"></i>
                             </div>
                         </div>
-                        <h3 class="m-0 font-weight-800 text-white kpi-value">Rp {{ number_format($totalInternalOmset, 0, ',', '.') }}</h3>
+                        <h3 class="m-0 font-weight-800 text-white kpi-value">Rp {{ number_format($todayInternalOmset, 0, ',', '.') }}</h3>
                     </div>
-                    <div class="mt-3 kpi-footer-wrapper d-none d-md-block">
-                        <span class="text-white-50 font-weight-600 kpi-card-footer" style="font-size: 0.8rem;"><i class="bi bi-info-circle-fill me-1 text-white-50"></i>Omset dari Cabang Pusat</span>
+                    <div class="mt-3 kpi-footer-wrapper">
+                        @if($omsetChangeStatus === 'up')
+                            <span class="text-success font-weight-700 kpi-card-footer" style="font-size: 0.8rem; color: #10b981 !important;">
+                                <i class="bi bi-arrow-up-short fs-5 align-middle"></i> +{{ number_format($omsetChangePercentage, 1, ',', '.') }}% naik dari kemarin
+                            </span>
+                        @elseif($omsetChangeStatus === 'down')
+                            <span class="text-danger font-weight-700 kpi-card-footer" style="font-size: 0.8rem; color: #ef4444 !important;">
+                                <i class="bi bi-arrow-down-short fs-5 align-middle"></i> -{{ number_format($omsetChangePercentage, 1, ',', '.') }}% turun dari kemarin
+                            </span>
+                        @else
+                            <span class="text-white-50 font-weight-600 kpi-card-footer" style="font-size: 0.8rem;">
+                                <i class="bi bi-dash-circle me-1 align-middle"></i> Stabil dibanding kemarin
+                            </span>
+                        @endif
                     </div>
                 </div>
             </a>
@@ -111,8 +123,8 @@
             <div class="card-custom p-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h5 class="m-0 font-weight-700 text-dark">Grafik 1: Tren Omset Cabang Internal</h5>
-                        <small class="text-muted">Hasil nominal omset gabungan tunai + QRIS</small>
+                        <h5 class="m-0 font-weight-700 text-dark">Grafik 1: Tren Pendapatan Penjualan Cabang Internal</h5>
+                        <small class="text-muted">Hasil nominal pendapatan gabungan tunai + QRIS</small>
                     </div>
                     <select class="form-select form-select-sm border bg-light font-weight-600 text-dark rounded-3 px-3 py-2" id="periode_select" style="width: auto; cursor: pointer;">
                         <option value="today" {{ $periode === 'today' ? 'selected' : '' }}>Hari Ini</option>
@@ -212,7 +224,7 @@
                 
                 <div class="d-grid gap-2 mt-3">
                     <a href="{{ route('export.omset') }}" class="btn btn-outline-dark d-flex align-items-center justify-content-between p-2 rounded-3">
-                        <span><i class="bi bi-file-earmark-spreadsheet-fill text-success me-2 fs-5"></i> Rekap Omset Cabang</span>
+                        <span><i class="bi bi-file-earmark-spreadsheet-fill text-success me-2 fs-5"></i> Rekap Pendapatan Penjualan Cabang</span>
                         <i class="bi bi-download"></i>
                     </a>
                     

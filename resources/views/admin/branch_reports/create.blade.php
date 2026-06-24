@@ -5,11 +5,6 @@
 
 @section('content')
 <div class="container-fluid p-0" style="max-width: 800px; margin: 0 auto;">
-    <div class="mb-3">
-        <a href="{{ route('branch-reports.index') }}" class="btn btn-light rounded-3 font-weight-600">
-            <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar
-        </a>
-    </div>
     <div class="card-custom">
         <div class="card-header-custom">
             <span class="text-dark font-weight-700">Form Laporan Omset Harian</span>

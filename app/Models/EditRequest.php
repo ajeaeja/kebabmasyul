@@ -77,12 +77,20 @@ class EditRequest extends Model
             $owner = \App\Models\User::where('role', 'owner')->first();
             if ($owner) {
                 $modelName = class_basename($editRequest->model_type);
-                $adminName = $editRequest->user ? $editRequest->user->name : 'Admin';
+                $roleLabel = 'Staf';
+                if ($editRequest->user) {
+                    if ($editRequest->user->role === 'admin') {
+                        $roleLabel = 'Admin';
+                    } elseif ($editRequest->user->role === 'gudang') {
+                        $roleLabel = 'Tim Gudang';
+                    }
+                }
+                $userName = $editRequest->user ? $editRequest->user->name : '';
                 
                 \App\Models\Notification::create([
                     'user_id' => $owner->id,
                     'title' => 'Permintaan Edit Baru',
-                    'message' => "Admin {$adminName} mengajukan edit data untuk {$modelName}.",
+                    'message' => "{$roleLabel} {$userName} mengajukan edit data untuk {$modelName}.",
                     'link' => route('edit-requests.show', $editRequest->id),
                     'is_read' => false,
                 ]);

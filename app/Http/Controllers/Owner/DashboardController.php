@@ -44,8 +44,30 @@ class DashboardController extends Controller implements HasMiddleware
         $totalBranches = Branch::count();
         $internalBranchesCount = Branch::count();
         
-        // Financial aggregates (Owner only)
-        $totalInternalOmset = BranchReport::sum('omset');
+        // Financial aggregates (Owner only) - Today's Sales Revenue vs Yesterday
+        $todayStr = date('Y-m-d');
+        $yesterdayStr = date('Y-m-d', strtotime('-1 day'));
+
+        $todayInternalOmset = (float) BranchReport::where('report_date', $todayStr)->sum('omset');
+        $yesterdayInternalOmset = (float) BranchReport::where('report_date', $yesterdayStr)->sum('omset');
+
+        $omsetChangeStatus = 'stable';
+        $omsetChangePercentage = 0.0;
+
+        if ($yesterdayInternalOmset > 0) {
+            $diff = $todayInternalOmset - $yesterdayInternalOmset;
+            $omsetChangePercentage = abs(($diff / $yesterdayInternalOmset) * 100);
+            if ($diff > 0) {
+                $omsetChangeStatus = 'up';
+            } elseif ($diff < 0) {
+                $omsetChangeStatus = 'down';
+            }
+        } elseif ($todayInternalOmset > 0) {
+            $omsetChangeStatus = 'up';
+            $omsetChangePercentage = 100.0;
+        }
+
+        $totalInternalOmset = $todayInternalOmset; // For compatibility or direct usage
 
         // Total orders quantity
         $totalOrderQty = (float) DB::table('partner_order_items')
@@ -229,7 +251,7 @@ class DashboardController extends Controller implements HasMiddleware
             'labels' => $labels,
             'datasets' => [
                 [
-                    'label' => 'Total Omset Cabang',
+                    'label' => 'Total Pendapatan Penjualan',
                     'data' => $chartBranchRevenue,
                     'borderColor' => '#10b981',
                     'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
@@ -259,7 +281,8 @@ class DashboardController extends Controller implements HasMiddleware
             'totalInternalOmset', 'totalOrderQty', 'safetyStockAlerts', 'safetyAlertCount',
             'pendingEditRequestsCount', 'missingReportBranches', 'labels', 
             'chartBranchRevenue', 'chartPartnerPurchases', 'drillDownData',
-            'chartData', 'partnerChart'
+            'chartData', 'partnerChart', 'todayInternalOmset', 'yesterdayInternalOmset',
+            'omsetChangeStatus', 'omsetChangePercentage'
         ));
     }
 
@@ -399,7 +422,7 @@ class DashboardController extends Controller implements HasMiddleware
 
         $callback = function() use($partners) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['ID Mitra', 'Nama Kemitraan', 'Nama Pemilik', 'No WhatsApp', 'Paket Usaha', 'Alamat', 'Tanggal Gabung', 'Tanggal Berakhir MOU', 'Status Aktif']);
+            fputcsv($file, ['ID Mitra', 'Nama Kemitraan', 'Nama Pemilik', 'No WhatsApp', 'Paket Usaha', 'Alamat', 'Tanggal Gabung', 'Masa Aktif MOU', 'Status Aktif']);
 
             foreach ($partners as $partner) {
                 fputcsv($file, [
@@ -410,7 +433,7 @@ class DashboardController extends Controller implements HasMiddleware
                     $partner->jenis_paket,
                     $partner->address,
                     $partner->join_date,
-                    $partner->mou_end_date,
+                    'Selamanya (Selama aktif membeli bahan baku)',
                     ucfirst($partner->status)
                 ]);
             }

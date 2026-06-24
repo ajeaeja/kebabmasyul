@@ -30,48 +30,40 @@
                 </div>
             </div>
         </div>
-        <div class="p-4">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" style="font-size: 0.875rem;">
-                    <thead>
-                        <tr class="text-muted" style="font-size: 0.8rem;">
-                            <th>SKU</th>
-                            <th>NAMA BAHAN BAKU</th>
-                            <th class="text-center">KUANTITAS MASUK</th>
-                            <th>SATUAN</th>
-                            <th>TANGGAL MASUK</th>
-                            <th>CATATAN PENGADAAN</th>
-                            <th class="text-center" style="width: 100px;">AKSI</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($incomingStocks as $stock)
-                            <tr>
-                                <td><code>{{ $stock->rawMaterial ? $stock->rawMaterial->sku : 'N/A' }}</code></td>
-                                <td class="font-weight-700 text-dark">{{ $stock->rawMaterial ? $stock->rawMaterial->name : 'Deleted Material' }}</td>
-                                <td class="text-center text-success font-weight-800">+{{ (float)$stock->quantity }}</td>
-                                <td><span class="badge bg-light text-dark border">{{ $stock->rawMaterial ? $stock->rawMaterial->unit : '-' }}</span></td>
-                                <td>{{ date('d-m-Y', strtotime($stock->incoming_date)) }}</td>
-                                <td class="text-muted" style="max-width: 300px;">{{ $stock->notes ?: '-' }}</td>
-                                <td class="text-center">
-                                    @if(Auth::user()->isOwner() || Auth::user()->isGudang())
-                                        <a href="{{ route('incoming-stocks.edit', $stock->id) }}" class="btn btn-sm btn-outline-primary border-0 rounded-circle" title="Edit/Koreksi">
-                                            <i class="bi bi-pencil-square fs-6"></i>
-                                        </a>
-                                    @else
-                                        -
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center text-muted py-4">Belum ada log stok masuk tercatat.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+        <div id="table-container">
+            @include('gudang.incoming_stocks.fragments.table')
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const container = document.getElementById('table-container');
+                function fetchPage(url) {
+                    fetch(url, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        container.innerHTML = data.html;
+                        window.history.pushState(null, '', url);
+                        attachPaginationLinks();
+                    })
+                    .catch(console.error);
+                }
+                function attachPaginationLinks() {
+                    const links = container.querySelectorAll('a.page-link');
+                    links.forEach(link => {
+                        link.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            const url = this.getAttribute('href');
+                            if (url) fetchPage(url);
+                        });
+                    });
+                }
+                attachPaginationLinks();
+            });
+        </script>
     </div>
 </div>
 @endsection

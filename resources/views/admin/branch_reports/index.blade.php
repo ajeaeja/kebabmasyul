@@ -1,29 +1,21 @@
 @extends('layouts.app')
 
-@section('title', 'Laporan Omset Harian Cabang')
-@section('page_title', 'Laporan Omset Harian Cabang')
+@section('title', 'Pendapatan Penjualan Harian Cabang')
+@section('page_title', 'Pendapatan Penjualan Harian Cabang')
 
 @section('content')
 <div class="container-fluid p-0">
+
     <!-- Search & Filter Card -->
     <div class="card-custom p-4 mb-4">
         <form action="{{ route('branch-reports.index') }}" method="GET" class="row g-2 align-items-end">
-            <div class="col-md-4 col-12">
-                <label for="branch_id" class="form-label text-muted font-weight-600" style="font-size: 0.75rem;">Pilih Cabang</label>
-                <select class="form-select" id="branch_id" name="branch_id">
-                    <option value="">-- Semua Cabang --</option>
-                    @foreach($branches as $b)
-                        <option value="{{ $b->id }}" {{ request('branch_id') == $b->id ? 'selected' : '' }}>{{ $b->name }}</option>
-                    @endforeach
-                </select>
-            </div>
             <div class="col-md-4 col-12">
                 <label for="date_filter" class="form-label text-muted font-weight-600" style="font-size: 0.75rem;">Periode Tanggal</label>
                 <select class="form-select" id="date_filter" name="date_filter" onchange="toggleCustomDates()">
                     <option value="">Semua Waktu</option>
                     <option value="today" {{ request('date_filter') === 'today' ? 'selected' : '' }}>Hari Ini</option>
                     <option value="yesterday" {{ request('date_filter') === 'yesterday' ? 'selected' : '' }}>Kemarin</option>
-                    <option value="last_7_days" {{ request('date_filter') === 'last_7_days' ? 'selected' : '' }}>7 Hari Terakhir</option>
+                    <option value="last_7_days" {{ request('date_filter', 'last_7_days') === 'last_7_days' ? 'selected' : '' }}>7 Hari Terakhir</option>
                     <option value="last_30_days" {{ request('date_filter') === 'last_30_days' ? 'selected' : '' }}>30 Hari Terakhir</option>
                     <option value="custom" {{ request('date_filter') === 'custom' ? 'selected' : '' }}>Pilih Periode</option>
                 </select>
@@ -47,11 +39,87 @@
     </div>
 
     @if(Auth::user()->isOwner())
-    <!-- Chart Card -->
-    <div class="card-custom p-4 mb-4">
-        <h6 class="font-weight-700 text-dark mb-3"><i class="bi bi-graph-up text-danger me-2"></i>Grafik Tren Omset Cabang</h6>
-        <div style="height: 250px; position: relative;">
-            <canvas id="branchReportChart"></canvas>
+    <!-- Comparative Table per Branch -->
+    <div class="card-custom p-0 mb-4">
+        <div class="card-header-custom bg-transparent border-bottom">
+            <span class="text-dark font-weight-700"><i class="bi bi-bar-chart-line-fill text-danger me-2"></i>Perbandingan Pendapatan Penjualan Antar Cabang</span>
+        </div>
+        <div class="p-3">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr class="text-muted" style="font-size: 0.8rem;">
+                            <th>NAMA CABANG</th>
+                            <th class="text-end" style="width: 25%;">TOTAL PENDAPATAN</th>
+                            <th class="text-center" style="width: 35%;">VISUAL TREN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($branchSummaries as $summary)
+                            @php
+                                $trend = $summary->daily_trend;
+                                $maxVal = count($trend) > 0 ? max($trend) : 0;
+                                $minVal = count($trend) > 0 ? min($trend) : 0;
+                                $range = $maxVal - $minVal;
+                                
+                                $width = 240;
+                                $height = 35;
+                                $points = [];
+                                
+                                if (count($trend) > 1) {
+                                    foreach ($trend as $i => $val) {
+                                        $x = ($i / (count($trend) - 1)) * $width;
+                                        $y = $height - 3;
+                                        if ($range > 0) {
+                                            $y = 3 + ($height - 6) * (1 - ($val - $minVal) / $range);
+                                        } elseif ($maxVal > 0) {
+                                            $y = 3 + ($height - 6) * (1 - $val / $maxVal);
+                                        }
+                                        $points[] = "$x,$y";
+                                    }
+                                    $pointsString = implode(' ', $points);
+                                } else {
+                                    $pointsString = "0,".($height/2)." ".$width.",".($height/2);
+                                }
+                                
+                                $trendColor = '#ef4444'; // Red default
+                                if (count($trend) >= 2) {
+                                    $first = $trend[0];
+                                    $last = end($trend);
+                                    if ($last >= $first) {
+                                        $trendColor = '#10b981'; // Green
+                                    }
+                                } else {
+                                    $trendColor = '#10b981';
+                                }
+                            @endphp
+                            <tr style="font-size: 0.875rem;">
+                                <td class="font-weight-700 text-dark">
+                                    <i class="bi bi-shop me-2 text-muted"></i>{{ $summary->branch->name }}
+                                </td>
+                                <td class="text-end font-weight-800 text-primary" style="font-size: 1rem;">
+                                    Rp {{ number_format($summary->total_omset, 0, ',', '.') }}
+                                </td>
+                                <td class="text-center py-2">
+                                    <div class="d-inline-block p-1 bg-light bg-opacity-50 rounded" style="border: 1px dashed rgba(0,0,0,0.05);">
+                                        <svg width="{{ $width }}" height="{{ $height }}" style="overflow: visible; display: block;">
+                                            <!-- Trend line -->
+                                            <polyline
+                                                fill="none"
+                                                stroke="{{ $trendColor }}"
+                                                stroke-width="2.5"
+                                                points="{{ $pointsString }}"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                            />
+                                        </svg>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     @endif
@@ -59,14 +127,14 @@
     <div class="card-custom p-0">
         <div class="card-header-custom d-flex justify-content-between align-items-center">
             <div>
-                <span class="text-dark font-weight-700">Daftar Omset Harian Kedai Cabang</span>
-                <p class="m-0 text-muted d-none d-md-block" style="font-size: 0.8rem; font-weight: 400;">Laporan omset disalin dari WhatsApp pusat setelah kedai tutup setiap malam.</p>
+                <span class="text-dark font-weight-700">Daftar Pendapatan Penjualan Harian Kedai Cabang</span>
+                <p class="m-0 text-muted d-none d-md-block" style="font-size: 0.8rem; font-weight: 400;">Laporan pendapatan penjualan disalin dari WhatsApp pusat setelah kedai tutup setiap malam.</p>
             </div>
             
             <div class="d-flex gap-2 align-items-center">
                 @if(Auth::user()->isAdmin())
-                    <a href="{{ route('branch-reports.create') }}" class="btn btn-accent rounded-3 font-weight-700 px-3 py-2 d-flex align-items-center justify-content-center" title="Input Omset Cabang">
-                        <i class="bi bi-wallet2 me-md-1"></i> <span class="d-none d-md-inline">Input Omset Cabang</span>
+                    <a href="{{ route('branch-reports.create') }}" class="btn btn-accent rounded-3 font-weight-700 px-3 py-2 d-flex align-items-center justify-content-center" title="Input Pendapatan Penjualan Cabang">
+                        <i class="bi bi-wallet2 me-md-1"></i> <span class="d-none d-md-inline">Input Pendapatan Penjualan Cabang</span>
                     </a>
                 @endif
                 <div class="dropdown">
@@ -90,7 +158,7 @@
                             <th>TANGGAL LAPORAN</th>
                             <th class="text-end">SETORAN TUNAI</th>
                             <th class="text-end">TRANSAKSI QRIS</th>
-                            <th class="text-end">TOTAL OMSET</th>
+                            <th class="text-end">TOTAL PENDAPATAN</th>
                             <th class="text-center">PORSI TERJUAL</th>
                             <th>CATATAN</th>
                             <th class="text-center" style="width: 150px;">AKSI</th>
@@ -117,7 +185,7 @@
                                                     <i class="bi bi-pencil-square fs-6"></i>
                                                 </a>
                                                 
-                                                <form action="{{ route('branch-reports.destroy', $item->report->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan omset cabang ini secara permanen?')">
+                                                <form action="{{ route('branch-reports.destroy', $item->report->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan pendapatan penjualan cabang ini secara permanen?')">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-outline-danger border-0 rounded-circle" title="Hapus">
@@ -136,7 +204,7 @@
                                     <td class="text-end text-muted">-</td>
                                     <td class="text-end"><span class="badge bg-danger bg-opacity-10 text-danger font-weight-700 px-2 py-1 rounded">Belum Diinput</span></td>
                                     <td class="text-center text-muted">-</td>
-                                    <td class="text-muted italic">Belum ada laporan omset</td>
+                                    <td class="text-muted italic">Belum ada pendapatan penjualan</td>
                                     <td class="text-center">
                                         @if(Auth::user()->isAdmin())
                                             <a href="{{ route('branch-reports.create', ['branch_id' => $item->branch->id, 'report_date' => $item->date]) }}" class="btn btn-sm btn-danger rounded-pill px-3 py-1 font-weight-700" style="font-size: 0.75rem;">
@@ -150,7 +218,7 @@
                             @endif
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center text-muted py-4">Belum ada laporan omset yang diinput.</td>
+                                <td colspan="8" class="text-center text-muted py-4">Belum ada pendapatan penjualan yang diinput.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -166,9 +234,6 @@
 @endsection
 
 @section('scripts')
-@if(Auth::user()->isOwner())
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-@endif
 <script>
     function toggleCustomDates() {
         const dateFilter = document.getElementById('date_filter').value;
@@ -182,30 +247,5 @@
             }
         });
     }
-
-    @if(Auth::user()->isOwner())
-    const ctxReport = document.getElementById('branchReportChart').getContext('2d');
-    const chartData = @json($chartData);
-    new Chart(ctxReport, {
-        type: 'line',
-        data: chartData,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom' }
-            },
-            scales: {
-                y: {
-                    ticks: {
-                        callback: function(value) {
-                            return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
-                        }
-                    }
-                }
-            }
-        }
-    });
-    @endif
 </script>
 @endsection

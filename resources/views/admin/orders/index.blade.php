@@ -9,23 +9,14 @@
     <div class="card-custom p-4 mb-4">
         <form action="{{ route('orders.index') }}" method="GET" class="row g-2 align-items-end">
             <!-- Row 1 -->
-            <div class="col-md-3 col-12">
+            <div class="{{ Auth::user()->isGudang() ? 'col-md-4' : 'col-md-3' }} col-12">
                 <label for="search" class="form-label text-muted font-weight-600" style="font-size: 0.75rem;">Cari Pesanan</label>
                 <div class="input-group">
                     <span class="input-group-text bg-transparent border-end-0 text-muted"><i class="bi bi-search"></i></span>
                     <input type="text" class="form-control border-start-0" id="search" name="search" placeholder="ID / Nama Mitra..." value="{{ request('search') }}">
                 </div>
             </div>
-            <div class="col-md-3 col-12">
-                <label for="partner_id" class="form-label text-muted font-weight-600" style="font-size: 0.75rem;">Pilih Mitra</label>
-                <select class="form-select" id="partner_id" name="partner_id">
-                    <option value="">-- Semua Mitra --</option>
-                    @foreach($partners as $p)
-                        <option value="{{ $p->id }}" {{ request('partner_id') == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-2 col-6">
+            <div class="{{ Auth::user()->isGudang() ? 'col-md-4' : 'col-md-3' }} col-6">
                 <label for="status" class="form-label text-muted font-weight-600" style="font-size: 0.75rem;">Status Proses</label>
                 <select class="form-select" id="status" name="status">
                     <option value="">-- Semua Status --</option>
@@ -36,7 +27,7 @@
                 </select>
             </div>
             @if(!Auth::user()->isGudang())
-                <div class="col-md-2 col-6">
+                <div class="col-md-3 col-6">
                     <label for="payment_status" class="form-label text-muted font-weight-600" style="font-size: 0.75rem;">Status Pembayaran</label>
                     <select class="form-select" id="payment_status" name="payment_status">
                         <option value="">-- Semua Status --</option>
@@ -45,7 +36,7 @@
                     </select>
                 </div>
             @endif
-            <div class="col-md-2 col-12">
+            <div class="{{ Auth::user()->isGudang() ? 'col-md-4' : 'col-md-3' }} col-12">
                 <label for="date_filter" class="form-label text-muted font-weight-600" style="font-size: 0.75rem;">Periode Tanggal</label>
                 <select class="form-select" id="date_filter" name="date_filter" onchange="toggleCustomDates()">
                     <option value="">Semua Waktu</option>
@@ -74,11 +65,87 @@
     </div>
 
     @if(Auth::user()->isOwner())
-    <!-- Chart Card -->
-    <div class="card-custom p-4 mb-4">
-        <h6 class="font-weight-700 text-dark mb-3"><i class="bi bi-graph-up text-warning me-2"></i>Grafik Tren Nominal Pembelian Bahan Baku</h6>
-        <div style="height: 250px; position: relative;">
-            <canvas id="partnerPurchasesChart"></canvas>
+    <!-- Comparative Table per Partner -->
+    <div class="card-custom p-0 mb-4">
+        <div class="card-header-custom bg-transparent border-bottom">
+            <span class="text-dark font-weight-700"><i class="bi bi-bar-chart-line-fill text-warning me-2"></i>Perbandingan Pembelian Bahan Baku Antar Mitra</span>
+        </div>
+        <div class="p-3">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr class="text-muted" style="font-size: 0.8rem;">
+                            <th>NAMA MITRA</th>
+                            <th class="text-end" style="width: 25%;">TOTAL PEMBELIAN</th>
+                            <th class="text-center" style="width: 35%;">VISUAL TREN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($partnerSummaries as $summary)
+                            @php
+                                $trend = $summary->daily_trend;
+                                $maxVal = count($trend) > 0 ? max($trend) : 0;
+                                $minVal = count($trend) > 0 ? min($trend) : 0;
+                                $range = $maxVal - $minVal;
+                                
+                                $width = 240;
+                                $height = 35;
+                                $points = [];
+                                
+                                if (count($trend) > 1) {
+                                    foreach ($trend as $i => $val) {
+                                        $x = ($i / (count($trend) - 1)) * $width;
+                                        $y = $height - 3;
+                                        if ($range > 0) {
+                                            $y = 3 + ($height - 6) * (1 - ($val - $minVal) / $range);
+                                        } elseif ($maxVal > 0) {
+                                            $y = 3 + ($height - 6) * (1 - $val / $maxVal);
+                                        }
+                                        $points[] = "$x,$y";
+                                    }
+                                    $pointsString = implode(' ', $points);
+                                } else {
+                                    $pointsString = "0,".($height/2)." ".$width.",".($height/2);
+                                }
+                                
+                                $trendColor = '#ef4444'; // Red default
+                                if (count($trend) >= 2) {
+                                    $first = $trend[0];
+                                    $last = end($trend);
+                                    if ($last >= $first) {
+                                        $trendColor = '#10b981'; // Green
+                                    }
+                                } else {
+                                    $trendColor = '#10b981';
+                                }
+                            @endphp
+                            <tr style="font-size: 0.875rem;">
+                                <td class="font-weight-700 text-dark">
+                                    <i class="bi bi-people me-2 text-muted"></i>{{ $summary->partner->name }}
+                                </td>
+                                <td class="text-end font-weight-800 text-warning" style="font-size: 1rem;">
+                                    Rp {{ number_format($summary->total_purchases, 0, ',', '.') }}
+                                </td>
+                                <td class="text-center py-2">
+                                    <div class="d-inline-block p-1 bg-light bg-opacity-50 rounded" style="border: 1px dashed rgba(0,0,0,0.05);">
+                                        <svg width="{{ $width }}" height="{{ $height }}" style="overflow: visible; display: block;">
+                                            <!-- Trend line -->
+                                            <polyline
+                                                fill="none"
+                                                stroke="{{ $trendColor }}"
+                                                stroke-width="2.5"
+                                                points="{{ $pointsString }}"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                            />
+                                        </svg>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     @endif
@@ -156,7 +223,13 @@
                                             <span class="badge bg-danger bg-opacity-10 text-danger">Belum Lunas</span>
                                         @endif
                                     </td>
-                                    <td class="text-end font-weight-700 text-dark">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                                    <td class="text-end">
+                                        <div class="font-weight-700 text-dark">Rp {{ number_format($order->total_price + $order->shipping_cost, 0, ',', '.') }}</div>
+                                        <div class="text-muted font-weight-500 mt-1" style="font-size: 0.7rem; line-height: 1.3;">
+                                            Barang: Rp {{ number_format($order->total_price, 0, ',', '.') }} <br>
+                                            Ongkir: Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}
+                                        </div>
+                                    </td>
                                 @endif
                                 
                                 <td class="text-center">
@@ -214,9 +287,6 @@
 @endsection
 
 @section('scripts')
-@if(Auth::user()->isOwner())
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-@endif
 <script>
     function toggleCustomDates() {
         const dateFilter = document.getElementById('date_filter').value;
@@ -230,44 +300,5 @@
             }
         });
     }
-
-    @if(Auth::user()->isOwner())
-    const ctxPartner = document.getElementById('partnerPurchasesChart').getContext('2d');
-    const partnerChartData = @json($partnerChart);
-    new Chart(ctxPartner, {
-        type: 'line',
-        data: partnerChartData,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom' },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) {
-                                label += ': ';
-                            }
-                            if (context.parsed.y !== null) {
-                                label += 'Rp ' + new Intl.NumberFormat('id-ID').format(context.parsed.y);
-                            }
-                            return label;
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    ticks: {
-                        callback: function(value) {
-                            return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
-                        }
-                    }
-                }
-            }
-        }
-    });
-    @endif
 </script>
 @endsection

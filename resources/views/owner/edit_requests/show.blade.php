@@ -5,11 +5,6 @@
 
 @section('content')
 <div class="container-fluid p-0" style="max-width: 900px; margin: 0 auto;">
-    <div class="mb-3">
-        <a href="{{ route('edit-requests.index') }}" class="btn btn-light rounded-3 font-weight-600">
-            <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar
-        </a>
-    </div>
     
     <!-- Meta Info Card -->
     <div class="card-custom p-4 mb-4">
@@ -128,6 +123,14 @@
                                     $oldValue = $branchOld ? $branchOld->name : $oldValue;
                                     $newValue = $branchNew ? $branchNew->name : $newValue;
                                 }
+
+                                // Resolve raw material name
+                                if ($field === 'raw_material_id') {
+                                    $oldMat = \App\Models\RawMaterial::find($oldValue);
+                                    $newMat = \App\Models\RawMaterial::find($newValue);
+                                    $oldValue = $oldMat ? $oldMat->name : $oldValue;
+                                    $newValue = $newMat ? $newMat->name : $newValue;
+                                }
                             @endphp
                             <tr>
                                 <td class="font-weight-600 text-muted">{{ strtoupper(str_replace('_', ' ', $field)) }}</td>
@@ -161,8 +164,5 @@
         </div>
     @endif
 
-    <div class="mt-3">
-        <a href="{{ route('edit-requests.index') }}" class="btn btn-light font-weight-600 px-4 rounded-3">&larr; Kembali ke Daftar</a>
-    </div>
 </div>
 @endsection

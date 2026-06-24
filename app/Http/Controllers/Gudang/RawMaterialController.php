@@ -99,6 +99,36 @@ class RawMaterialController extends Controller implements HasMiddleware
             unset($validated['price']);
         }
 
+        $user = Auth::user();
+
+        if (!$user->isOwner()) {
+            $request->validate([
+                'edit_reason' => 'required|string|min:5',
+            ], [
+                'edit_reason.required' => 'Anda harus memasukkan alasan pengajuan edit data.',
+                'edit_reason.min' => 'Alasan pengajuan edit data minimal 5 karakter.',
+            ]);
+
+            $originalData = $rawMaterial->only(['sku', 'name', 'stock', 'unit', 'safety_stock', 'status']);
+            $requestedData = $validated;
+
+            if ($originalData == $requestedData) {
+                return back()->withErrors(['message' => 'Tidak ada perubahan data yang dideteksi.'])->withInput();
+            }
+
+            \App\Models\EditRequest::create([
+                'user_id' => Auth::id(),
+                'model_type' => RawMaterial::class,
+                'model_id' => $rawMaterial->id,
+                'original_data' => $originalData,
+                'requested_data' => $requestedData,
+                'reason' => $request->edit_reason,
+                'status' => 'pending',
+            ]);
+
+            return redirect()->route('raw-materials.index')->with('success', 'Pengajuan edit bahan baku berhasil dibuat dan menunggu persetujuan Owner.');
+        }
+
         $rawMaterial->update($validated);
 
         return redirect()->route('raw-materials.index')->with('success', 'Bahan baku berhasil diperbarui.');

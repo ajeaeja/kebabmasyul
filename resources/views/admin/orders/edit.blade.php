@@ -5,11 +5,6 @@
 
 @section('content')
 <div class="container-fluid p-0" style="max-width: 900px; margin: 0 auto;">
-    <div class="mb-3">
-        <a href="{{ route('orders.index') }}" class="btn btn-light rounded-3 font-weight-600">
-            <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar
-        </a>
-    </div>
     <div class="card-custom">
         <div class="card-header-custom">
             <span class="text-dark font-weight-700">Form Koreksi Pesanan Bahan Baku</span>
@@ -112,10 +107,10 @@
                 </div>
 
                 <!-- Admin edit reason required -->
-                @if($order->created_at->diffInHours(now()) > 24)
+                @if(!Auth::user()->isOwner() && !($order->order_date && \Carbon\Carbon::parse($order->order_date)->diffInHours(now()) < 24))
                     <div class="card bg-warning bg-opacity-10 border border-warning border-opacity-25 rounded-3 p-3 mb-4">
                         <h6 class="font-weight-700 text-dark mb-2"><i class="bi bi-shield-lock-fill text-warning me-1"></i>Persetujuan Owner Diperlukan</h6>
-                        <p class="text-muted m-0 mb-3" style="font-size: 0.8rem;">Anda bertindak sebagai Admin Utama. Koreksi pesanan ini akan diajukan ke Owner untuk ditinjau dan disetujui karena data dibuat lebih dari 24 jam yang lalu.</p>
+                        <p class="text-muted m-0 mb-3" style="font-size: 0.8rem;">Anda bertindak sebagai Admin Utama. Koreksi pesanan ini akan diajukan ke Owner untuk ditinjau dan disetujui.</p>
                         
                         <label for="edit_reason" class="form-label font-weight-700 text-dark">Alasan Pengajuan Koreksi Pesanan</label>
                         <textarea class="form-control bg-white @error('edit_reason') is-invalid @enderror" id="edit_reason" name="edit_reason" rows="2" placeholder="Contoh: Mitra merevisi pesanan roti kebab via WhatsApp chat..." required>{{ old('edit_reason') }}</textarea>
@@ -127,7 +122,7 @@
 
                 <div class="d-flex gap-2 justify-content-end border-top pt-3">
                     <a href="{{ route('orders.index') }}" class="btn btn-light font-weight-600 px-4 rounded-3">Batal</a>
-                    @if($order->created_at->diffInHours(now()) > 24)
+                    @if(!Auth::user()->isOwner() && !($order->order_date && \Carbon\Carbon::parse($order->order_date)->diffInHours(now()) < 24))
                         <button type="submit" class="btn btn-warning px-4 rounded-3 text-dark font-weight-600">Ajukan Koreksi Pesanan</button>
                     @else
                         <button type="submit" class="btn btn-accent px-4 rounded-3">Simpan Perubahan</button>

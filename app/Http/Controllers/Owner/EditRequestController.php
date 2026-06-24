@@ -18,7 +18,7 @@ class EditRequestController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            'role:owner,admin',
+            'role:owner,admin,gudang',
             new Middleware('role:owner', only: ['approve', 'reject']),
         ];
     }
@@ -50,8 +50,8 @@ class EditRequestController extends Controller implements HasMiddleware
      */
     public function show(EditRequest $editRequest)
     {
-        // Admins can only view their own requests
-        if (Auth::user()->isAdmin() && $editRequest->user_id !== Auth::id()) {
+        // Admins and Gudang can only view their own requests
+        if (!Auth::user()->isOwner() && $editRequest->user_id !== Auth::id()) {
             abort(403, 'Anda tidak memiliki hak akses untuk melihat pengajuan ini.');
         }
 
