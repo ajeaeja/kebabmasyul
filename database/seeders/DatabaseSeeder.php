@@ -13,8 +13,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Clear tables to avoid duplicates
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        // 1. Clear tables to avoid duplicates (Driver-aware for MySQL, PostgreSQL, SQLite)
+        $driver = DB::connection()->getDriverName();
+        if ($driver === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        } elseif ($driver === 'pgsql') {
+            DB::statement("SET session_replication_role = 'replica';");
+        } elseif ($driver === 'sqlite') {
+            DB::statement('PRAGMA foreign_keys = OFF;');
+        }
+
         DB::table('edit_requests')->truncate();
         DB::table('branch_reports')->truncate();
         DB::table('partner_order_items')->truncate();
@@ -24,7 +32,14 @@ class DatabaseSeeder extends Seeder
         DB::table('branches')->truncate();
         DB::table('partners')->truncate();
         DB::table('users')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        if ($driver === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        } elseif ($driver === 'pgsql') {
+            DB::statement("SET session_replication_role = 'origin';");
+        } elseif ($driver === 'sqlite') {
+            DB::statement('PRAGMA foreign_keys = ON;');
+        }
 
         // 2. Seed Users
         DB::table('users')->insert([
