@@ -1,124 +1,125 @@
-# Panduan Hosting Laravel di Rumahweb / Hostinger (cPanel / hPanel)
+# Panduan Hosting Manual Laravel (ZIP) di Rumahweb / Hostinger (Tanpa SSH / Paket Murah)
 
-Dokumen ini berisi panduan langkah demi langkah untuk melakukan deploy aplikasi Franchise Kebab Masyul ke shared hosting (Rumahweb atau Hostinger) menggunakan branch `rumahweb` ini.
+Dokumen ini berisi panduan lengkap untuk melakukan deploy manual menggunakan file ZIP ke cPanel (Rumahweb) atau hPanel (Hostinger) pada paket hosting murah yang **tidak memiliki akses SSH** dan **tidak bisa mengubah Document Root** (terkunci di `public_html`).
 
 ---
 
-## 1. Persiapan Awal di Komputer Lokal
+## 1. Persiapan Awal di Komputer Lokal (Laragon)
 
-Sebelum mengupload file ke hosting, pastikan kamu melakukan kompilasi aset frontend secara lokal agar file CSS & JS buatan Vite terangkut ke hosting:
+Karena hosting kamu tidak memiliki SSH, kita harus menyiapkan seluruh aset (`public/build`) dan library vendor (`vendor`) secara lokal sebelum di-ZIP.
 
-1. Buka terminal lokal kamu.
-2. Jalankan perintah kompilasi aset:
+1. Buka terminal di folder project kamu (`c:\laragon\www\franchise-app`).
+2. Jalankan perintah kompilasi aset CSS/JS:
    ```bash
    npm run build
    ```
-3. Kompilasi ini akan menghasilkan folder `public/build`. Karena kita sudah mengubah `.gitignore` pada branch `rumahweb` ini, folder `public/build` sekarang akan terdeteksi oleh Git dan bisa dicommit.
-4. Commit dan push aset tersebut:
+   *(Perintah ini akan membuat folder `public/build`)*.
+3. Jalankan instalasi composer versi produksi lokal untuk memastikan folder `vendor` bersih dari dev-dependencies:
    ```bash
-   git add public/build
-   git commit -m "build: compile assets for production shared hosting"
-   git push origin rumahweb
+   composer install --no-dev --optimize-autoloader
    ```
+4. Compress seluruh isi folder `franchise-app` menjadi satu file ZIP (misal: `project.zip`).
+   * **PENTING:** Pastikan file `.env` (atau `.env.production`) dan folder `vendor` juga ikut terkompres di dalam file ZIP tersebut.
+   * *Tips:* Folder `node_modules` **TIDAK PERLU** diikutkan di dalam ZIP karena ukurannya sangat besar dan tidak digunakan di server produksi.
 
 ---
 
-## 2. Struktur Direktori yang Aman di Hosting
+## 2. Proses Upload & Ekstrak di cPanel / hPanel
 
-**JANGAN** mengupload seluruh file Laravel langsung ke dalam folder `public_html`. Ini sangat berbahaya karena file sensitif seperti `.env` bisa diakses oleh publik secara langsung.
+Metode ini memisahkan file inti aplikasi (core) di luar folder publik demi keamanan, agar file konfigurasi database `.env` tidak dapat diakses langsung oleh publik.
 
-Ikuti struktur direktori yang direkomendasikan ini:
-* Letakkan seluruh folder aplikasi Laravel di luar folder `public_html` (misal di direktori `/home/u123456/franchise-app`).
-* Arahkan **Document Root** domain utama kamu ke folder `/home/u123456/franchise-app/public`.
-
-### Cara Mengatur di Hostinger (hPanel):
-1. Masuk ke **hPanel Hostinger** -> **Websites** -> **Dashboard**.
-2. Cari menu **Domain** -> **Subdomains** atau **Add Website**.
-3. Jika menggunakan domain utama, cari menu **Website Settings** -> **Directory / Folder**.
-4. Ubah tujuan folder dari `public_html` ke `franchise-app/public`.
-
-### Cara Mengatur di Rumahweb (cPanel):
-1. Masuk ke **cPanel** -> **Domains**.
-2. Klik **Manage** pada domain kamu.
-3. Ubah kolom **Document Root** menjadi `franchise-app/public`.
+1. Masuk ke **cPanel** (Rumahweb) atau **hPanel** (Hostinger) -> buka **File Manager**.
+2. Di dalam direktori root hosting kamu (sejajar dengan folder `public_html`), buatlah folder baru bernama **`franchise-core`** (sehingga jalurnya menjadi `/home/username/franchise-core`).
+3. Upload file `project.zip` ke dalam folder **`franchise-core`** tersebut.
+4. Klik kanan file `project.zip` di File Manager, pilih **Extract** ke dalam folder `franchise-core`.
 
 ---
 
-## 3. Konfigurasi File `.env` di Hosting
+## 3. Pemindahan Folder Publik
 
-1. Copy file `.env.production` yang ada di root direktori branch ini menjadi `.env` di server hosting kamu.
-2. Edit file `.env` tersebut di File Manager hosting dan sesuaikan konfigurasi database MySQL kamu:
+Sekarang kita akan memindahkan file-file yang seharusnya diakses oleh publik ke dalam folder `public_html`.
+
+1. Masuk ke folder `/home/username/franchise-core/public/`.
+2. Pilih semua file dan folder di dalamnya (seperti `.htaccess`, `favicon.ico`, `index.php`, `robots.txt`, dan folder `build`), lalu gunakan fitur **Move** di File Manager untuk memindahkannya ke dalam folder **`public_html`** (sehingga jalurnya menjadi `/home/username/public_html/`).
+3. Sekarang, folder `/home/username/franchise-core/public/` seharusnya sudah kosong.
+
+---
+
+## 4. Edit File `index.php` di `public_html`
+
+Karena kita telah memisahkan file core Laravel dan file public, kita harus memberi tahu file `public_html/index.php` di mana letak file core aplikasi.
+
+1. Masuk ke folder **`public_html`**.
+2. Klik kanan file **`index.php`**, lalu klik **Edit**.
+3. Cari baris berikut (biasanya di sekitar baris 34 atau di dekat `autoload.php`):
+   ```php
+   require __DIR__.'/../vendor/autoload.php';
+   ```
+   Ubah menjadi:
+   ```php
+   require __DIR__.'/../franchise-core/vendor/autoload.php';
+   ```
+4. Cari baris berikut (biasanya di sekitar baris 47 atau di dekat `bootstrap/app.php`):
+   ```php
+   $app = require_once __DIR__.'/../bootstrap/app.php';
+   ```
+   Ubah menjadi:
+   ```php
+   $app = require_once __DIR__.'/../franchise-core/bootstrap/app.php';
+   ```
+5. Simpan perubahan file tersebut.
+
+---
+
+## 5. Konfigurasi Database `.env`
+
+1. Masuk ke folder **`franchise-core`**.
+2. Cari file `.env` (atau rename `.env.production` menjadi `.env`).
+3. Klik kanan dan **Edit** file `.env` tersebut. Sesuaikan kredensial database MySQL baru yang sudah kamu buat di cPanel/hPanel:
    ```env
    APP_ENV=production
    APP_DEBUG=false
-   APP_URL=https://domainmitrakamu.com
+   APP_URL=https://domainkamu.com  # Ganti dengan domain kamu
 
    DB_CONNECTION=mysql
    DB_HOST=127.0.0.1
-   DB_DATABASE=u123456_dbmasyul  # Nama database dari hosting
-   DB_USERNAME=u123456_usermasyul  # Username database dari hosting
-   DB_PASSWORD=password_db_kamu   # Password database dari hosting
+   DB_PORT=3306
+   DB_DATABASE=username_nama_database  # Nama database dari cPanel
+   DB_USERNAME=username_user_database  # Username database dari cPanel
+   DB_PASSWORD="password_database_kamu" # Password database dari cPanel
    ```
-3. Generate application key dengan masuk ke SSH hosting (jika tersedia) dan jalankan:
-   ```bash
-   php artisan key:generate
-   ```
-   *Jika tidak ada SSH*, kamu bisa mencopy nilai `APP_KEY` dari file `.env` lokal kamu ke `.env` server hosting.
+4. Simpan file tersebut.
 
 ---
 
-## 4. Jalankan Migrasi & Database Seeder di Hosting
+## 6. Jalankan Migrasi & Database Seeder (Tanpa SSH)
 
-### Opsi A: Jika Ada Akses SSH (Direkomendasikan)
-Hubungkan terminal kamu ke SSH hosting, masuk ke folder aplikasi (`cd franchise-app`), lalu jalankan perintah:
-```bash
-# Jalankan migrasi dan seeder database
-php artisan migrate --force
-php artisan db:seed --force
-```
+Karena hosting murah tidak memiliki SSH, kamu tidak bisa menjalankan perintah `php artisan migrate`. Sebagai gantinya, saya sudah membuat **route web otomatis** yang bisa kamu jalankan sekali melalui browser.
 
-### Opsi B: Jika Tidak Ada Akses SSH (Lewat Web Routing Sementara)
-Jika hosting tidak menyediakan akses SSH, kamu bisa menjalankan migrasi secara sementara via route web:
-1. Buka file [routes/web.php](file:///c:/laragon/www/franchise-app/routes/web.php) di editor cPanel.
-2. Tambahkan baris kode ini di bagian paling atas (di luar auth middleware):
-   ```php
-   Route::get('/run-migration-temp', function () {
-       try {
-           Artisan::call('migrate:fresh', ['--force' => true]);
-           Artisan::call('db:seed', ['--force' => true]);
-           return "Migration & Seeding berhasil!";
-       } catch (\Exception $e) {
-           return "Gagal: " . $e->getMessage();
-       }
-   });
+1. Buka browser kamu.
+2. Akses alamat URL berikut:
    ```
-3. Akses URL `https://domainkamu.com/run-migration-temp` di browser sekali saja.
-4. **PENTING:** Setelah berhasil, segera hapus kembali route tersebut dari `routes/web.php` demi keamanan database kamu!
+   https://domainkamu.com/run-migration-temp-abc123xyz
+   ```
+3. Tunggu hingga layar menampilkan pesan **"Migrasi & Seeding sukses!"**.
+4. **PENTING / SECURITY WARNING:** Setelah sukses, demi alasan keamanan database kamu, silakan edit kembali file `franchise-core/routes/web.php` di File Manager cPanel, lalu hapus atau comment out kode route `/run-migration-temp-abc123xyz` tersebut.
 
 ---
 
-## 5. Mengatur Izin Folder (Permissions)
+## 7. Folder Permission & Storage Link (Upload Gambar/MOU)
 
-Web server di shared hosting memerlukan akses menulis (*write access*) ke beberapa folder penting Laravel.
-Di File Manager cPanel / hPanel:
-1. Klik kanan folder `storage` -> pilih **Permissions** -> atur ke `775` (atau `755` tergantung provider hosting).
-2. Lakukan hal yang sama untuk folder `bootstrap/cache` -> atur ke `775`.
+Shared hosting memerlukan permission write untuk folder storage agar aplikasi bisa menyimpan session, cache, dan file upload.
 
----
-
-## 6. Membuat Symlink Storage (Penting untuk Gambar/MOU)
-
-Agar dokumen MOU dan gambar pendukung yang diupload oleh mitra dapat diakses oleh publik, buatlah symbolic link:
-
-* **Jika ada SSH:**
-  ```bash
-  php artisan storage:link
-  ```
-* **Jika tidak ada SSH (Gunakan Cron Job cPanel/Hostinger):**
-  1. Masuk ke menu **Cron Jobs** di cPanel/hPanel.
-  2. Tambahkan tugas baru yang berjalan sekali saja dengan perintah command:
+1. Di File Manager cPanel, klik kanan folder **`franchise-core/storage`** -> pilih **Permissions** -> atur menjadi `775` (atau `755` jika `775` dilarang oleh hosting).
+2. Lakukan hal yang sama untuk folder **`franchise-core/bootstrap/cache`** -> atur menjadi `775`.
+3. **Membuat Symlink Storage (Penting untuk file upload MOU/Gambar):**
+   Karena cPanel tidak ada SSH, gunakan fitur **Cron Jobs** di cPanel/hPanel kamu:
+   * Masuk ke menu **Cron Jobs** di cPanel/hPanel.
+   * Tambahkan tugas baru yang diatur berjalan sekali saja (misal pilih per menit, tapi nanti langsung dihapus setelah jalan sekali).
+   * Pada kolom command, masukkan perintah ini:
      ```bash
-     ln -s /home/username/franchise-app/storage/app/public /home/username/franchise-app/public/storage
+     ln -s /home/username/franchise-core/storage/app/public /home/username/public_html/storage
      ```
-     *(Ganti `/home/username/franchise-app` sesuai dengan absolute path folder kamu di hosting)*.
-  3. Jalankan cron job tersebut, lalu hapus kembali cron job-nya setelah symlink terbentuk.
+     *(Ganti `username` sesuai dengan nama user cPanel kamu, kamu bisa melihat absolute path ini di pojok kiri atas File Manager cPanel)*.
+   * Klik **Add New Cron Job**.
+   * Tunggu 1 menit, setelah symlink terbentuk di folder `public_html/storage`, hapus kembali cron job tersebut agar tidak berjalan berulang-ulang.
