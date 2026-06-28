@@ -28,7 +28,14 @@ return new class extends Migration
         });
 
         // 3. Update payment_status enum to drop 'tempo'
-        DB::statement("ALTER TABLE partner_orders MODIFY COLUMN payment_status ENUM('lunas', 'belum_lunas') DEFAULT 'belum_lunas'");
+        $driver = DB::getDriverName();
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE partner_orders DROP CONSTRAINT IF EXISTS partner_orders_payment_status_check");
+            DB::statement("ALTER TABLE partner_orders ADD CONSTRAINT partner_orders_payment_status_check CHECK (payment_status IN ('lunas', 'belum_lunas'))");
+            DB::statement("ALTER TABLE partner_orders ALTER COLUMN payment_status SET DEFAULT 'belum_lunas'");
+        } elseif ($driver === 'mysql') {
+            DB::statement("ALTER TABLE partner_orders MODIFY COLUMN payment_status ENUM('lunas', 'belum_lunas') DEFAULT 'belum_lunas'");
+        }
     }
 
     /**
@@ -41,6 +48,13 @@ return new class extends Migration
             $table->string('payment_proof')->nullable()->after('payment_status');
         });
 
-        DB::statement("ALTER TABLE partner_orders MODIFY COLUMN payment_status ENUM('lunas', 'belum_lunas', 'tempo') DEFAULT 'belum_lunas'");
+        $driver = DB::getDriverName();
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE partner_orders DROP CONSTRAINT IF EXISTS partner_orders_payment_status_check");
+            DB::statement("ALTER TABLE partner_orders ADD CONSTRAINT partner_orders_payment_status_check CHECK (payment_status IN ('lunas', 'belum_lunas', 'tempo'))");
+            DB::statement("ALTER TABLE partner_orders ALTER COLUMN payment_status SET DEFAULT 'belum_lunas'");
+        } elseif ($driver === 'mysql') {
+            DB::statement("ALTER TABLE partner_orders MODIFY COLUMN payment_status ENUM('lunas', 'belum_lunas', 'tempo') DEFAULT 'belum_lunas'");
+        }
     }
 };
