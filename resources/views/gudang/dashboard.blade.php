@@ -63,12 +63,16 @@
                                         <td class="font-weight-600 text-dark">{{ $order->partner ? $order->partner->name : 'N/A' }}</td>
                                         <td>{{ date('d-m-Y', strtotime($order->order_date)) }}</td>
                                         <td>
-                                            @if($order->status === 'pending')
-                                                <span class="badge bg-secondary">Pending (Siapkan)</span>
-                                            @elseif($order->status === 'processing')
-                                                <span class="badge bg-info">Diproses (Kirim)</span>
-                                            @else
+                                            @if($order->status === 'menunggu_dipacking')
+                                                <span class="badge bg-secondary">Menunggu Dipacking</span>
+                                            @elseif($order->status === 'dipacking')
+                                                <span class="badge bg-info">Dipacking</span>
+                                            @elseif($order->status === 'dikirim')
+                                                <span class="badge bg-warning text-dark">Dikirim</span>
+                                            @elseif($order->status === 'selesai')
                                                 <span class="badge bg-success">Selesai</span>
+                                            @else
+                                                <span class="badge bg-light text-dark">{{ $order->status }}</span>
                                             @endif
                                         </td>
                                         <td class="text-center">

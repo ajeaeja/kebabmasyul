@@ -174,7 +174,7 @@
                                                 @endforeach
                                             </ul>
                                         </td>
-                                        <td class="text-end font-weight-600 text-dark">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                                        <td class="text-end font-weight-600 text-dark">Rp {{ number_format($order->total_price + $order->shipping_cost, 0, ',', '.') }}</td>
                                         <td class="text-center">
                                             @if($order->status === 'selesai')
                                                 <span class="badge bg-success bg-opacity-10 text-success">Selesai</span>
@@ -182,6 +182,8 @@
                                                 <span class="badge bg-warning bg-opacity-10 text-warning">Menunggu</span>
                                             @elseif($order->status === 'dipacking')
                                                 <span class="badge bg-info bg-opacity-10 text-info">Dipacking</span>
+                                            @elseif($order->status === 'dikirim')
+                                                <span class="badge bg-warning bg-opacity-10 text-dark">Dikirim</span>
                                             @else
                                                 <span class="badge bg-danger bg-opacity-10 text-danger">Batal</span>
                                             @endif

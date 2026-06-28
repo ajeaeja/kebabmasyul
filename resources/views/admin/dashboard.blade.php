@@ -126,13 +126,15 @@
                                         <td>#{{ $order->id }}</td>
                                         <td class="font-weight-600 text-dark">{{ $order->partner ? $order->partner->name : 'N/A' }}</td>
                                         <td>{{ date('d-m-Y', strtotime($order->order_date)) }}</td>
-                                        <td class="text-end font-weight-600">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                                         <td class="text-end font-weight-600">Rp {{ number_format($order->total_price + $order->shipping_cost, 0, ',', '.') }}</td>
                                         <td class="text-center">
-                                            @if($order->status === 'pending')
-                                                <span class="badge bg-secondary text-white">Pending</span>
-                                            @elseif($order->status === 'processing')
-                                                <span class="badge bg-info text-white">Diproses</span>
-                                            @elseif($order->status === 'completed')
+                                            @if($order->status === 'menunggu_dipacking')
+                                                <span class="badge bg-secondary text-white">Menunggu</span>
+                                            @elseif($order->status === 'dipacking')
+                                                <span class="badge bg-info text-white">Dipacking</span>
+                                            @elseif($order->status === 'dikirim')
+                                                <span class="badge bg-warning text-dark">Dikirim</span>
+                                            @elseif($order->status === 'selesai')
                                                 <span class="badge bg-success text-white">Selesai</span>
                                             @else
                                                 <span class="badge bg-danger text-white">Dibatalkan</span>
