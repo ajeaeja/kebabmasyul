@@ -2,14 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Temporary Seeder Route (will be deleted after running)
-Route::get('/run-seeder-temp-abc123xyz', function () {
+// Temporary Migration & Seeder Route (will be deleted after running)
+Route::get('/run-migration-temp-abc123xyz', function () {
     try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        $migrateOutput = \Illuminate\Support\Facades\Artisan::output();
+        
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-        $output = \Illuminate\Support\Facades\Artisan::output();
-        return 'Seeding sukses! Output:<br><pre>' . $output . '</pre>';
+        $seedOutput = \Illuminate\Support\Facades\Artisan::output();
+        
+        return 'Migrasi & Seeding sukses!<br><br><b>Output Migrasi:</b><pre>' . $migrateOutput . '</pre><br><b>Output Seeding:</b><pre>' . $seedOutput . '</pre>';
     } catch (\Exception $e) {
-        return 'Gagal melakukan seeding: ' . $e->getMessage();
+        return 'Gagal menjalankan migrasi/seeding: ' . $e->getMessage();
     }
 });
 
