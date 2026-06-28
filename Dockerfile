@@ -41,7 +41,7 @@ RUN git config --global --add safe.directory /var/www/html && \
      composer install --no-dev --optimize-autoloader --no-interaction)
 
 # Set correct permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html
 
 # Copy Nginx and Supervisor configuration
 COPY docker/nginx.conf /etc/nginx/nginx.conf
