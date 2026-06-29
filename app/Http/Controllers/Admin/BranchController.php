@@ -107,10 +107,28 @@ class BranchController extends Controller implements HasMiddleware
                 'edit_reason.min' => 'Alasan pengajuan edit data minimal 5 karakter.',
             ]);
 
-            $originalData = $branch->only(['name', 'address', 'opened_date', 'status', 'notes', 'pengelola_cabang']);
+            $originalData = [
+                'name' => (string)$branch->name,
+                'address' => (string)$branch->address,
+                'opened_date' => $branch->opened_date ? date('Y-m-d', strtotime($branch->opened_date)) : null,
+                'status' => (string)$branch->status,
+                'notes' => (string)$branch->notes,
+                'pengelola_cabang' => (string)$branch->pengelola_cabang,
+            ];
+
             $requestedData = $validated;
 
-            if ($originalData == $requestedData) {
+            $hasChanged = false;
+            foreach ($requestedData as $key => $val) {
+                $origVal = isset($originalData[$key]) ? (string)$originalData[$key] : '';
+                $reqVal = $val !== null ? (string)$val : '';
+                if ($origVal !== $reqVal) {
+                    $hasChanged = true;
+                    break;
+                }
+            }
+
+            if (!$hasChanged) {
                 return back()->withErrors(['message' => 'Tidak ada perubahan data yang dideteksi.'])->withInput();
             }
 

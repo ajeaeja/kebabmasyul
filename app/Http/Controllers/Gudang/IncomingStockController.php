@@ -99,10 +99,31 @@ class IncomingStockController extends Controller implements HasMiddleware
                 'edit_reason.min' => 'Alasan pengajuan edit data minimal 5 karakter.',
             ]);
 
-            $originalData = $incomingStock->only(['raw_material_id', 'quantity', 'incoming_date', 'notes']);
+            $originalData = [
+                'raw_material_id' => $incomingStock->raw_material_id,
+                'quantity' => (float)$incomingStock->quantity,
+                'incoming_date' => $incomingStock->incoming_date ? date('Y-m-d', strtotime($incomingStock->incoming_date)) : null,
+                'notes' => (string)$incomingStock->notes,
+            ];
+
             $requestedData = $validated;
 
-            if ($originalData == $requestedData) {
+            $hasChanged = false;
+            foreach ($requestedData as $key => $val) {
+                $origVal = isset($originalData[$key]) ? (string)$originalData[$key] : '';
+                $reqVal = $val !== null ? (string)$val : '';
+                if ($key === 'quantity') {
+                    if (abs((float)$origVal - (float)$reqVal) > 0.0001) {
+                        $hasChanged = true;
+                        break;
+                    }
+                } else if ($origVal !== $reqVal) {
+                    $hasChanged = true;
+                    break;
+                }
+            }
+
+            if (!$hasChanged) {
                 return back()->withErrors(['message' => 'Tidak ada perubahan data yang dideteksi.'])->withInput();
             }
 

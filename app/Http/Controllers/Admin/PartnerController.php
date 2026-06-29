@@ -121,6 +121,7 @@ class PartnerController extends Controller implements HasMiddleware
             'phone' => 'required|string|max:20',
             'address' => 'required|string',
             'jenis_paket' => 'required|in:Silver,Gold,Platinum',
+            'join_date' => 'required|date',
             'status' => 'required|in:active,inactive',
             'notes' => 'nullable|string',
             'mou_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
@@ -150,11 +151,33 @@ class PartnerController extends Controller implements HasMiddleware
                 $validated['mou_path'] = 'uploads/mou/temp/' . $filename;
             }
 
-            $originalData = $partner->only(['name', 'owner_name', 'phone', 'address', 'jenis_paket', 'status', 'notes', 'mou_path']);
+            $originalData = [
+                'name' => (string)$partner->name,
+                'owner_name' => (string)$partner->owner_name,
+                'phone' => (string)$partner->phone,
+                'address' => (string)$partner->address,
+                'jenis_paket' => (string)$partner->jenis_paket,
+                'join_date' => $partner->join_date ? date('Y-m-d', strtotime($partner->join_date)) : null,
+                'status' => (string)$partner->status,
+                'notes' => (string)$partner->notes,
+                'mou_path' => (string)$partner->mou_path,
+            ];
+
             $requestedData = $validated;
 
             // Check if there are actual changes
-            if ($originalData == $requestedData) {
+            $hasChanged = false;
+            foreach ($requestedData as $key => $val) {
+                if ($key === 'mou_document') continue;
+                $origVal = isset($originalData[$key]) ? (string)$originalData[$key] : '';
+                $reqVal = $val !== null ? (string)$val : '';
+                if ($origVal !== $reqVal) {
+                    $hasChanged = true;
+                    break;
+                }
+            }
+
+            if (!$hasChanged) {
                 return back()->withErrors(['message' => 'Tidak ada perubahan data yang dideteksi.'])->withInput();
             }
 

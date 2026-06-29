@@ -76,7 +76,7 @@ class BranchReportController extends Controller implements HasMiddleware
             ->whereIn('branch_id', $branchIds)
             ->whereIn('report_date', $dates)
             ->get()
-            ->groupBy(function($item) {
+            ->groupBy(function ($item) {
                 return $item->branch_id . '_' . $item->report_date;
             });
 
@@ -106,7 +106,7 @@ class BranchReportController extends Controller implements HasMiddleware
             $currentPage,
             ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath(), 'query' => $request->query()]
         );
-        
+
         $branches = Branch::orderBy('name', 'asc')->get();
 
         // Calculate comparative table data per branch for the filtered date range
@@ -122,7 +122,7 @@ class BranchReportController extends Controller implements HasMiddleware
             foreach ($chronologicalDates as $d) {
                 $key = $branch->id . '_' . $d;
                 $report = isset($dbReports[$key]) ? $dbReports[$key]->first() : null;
-                $dailyTrend[] = $report ? (float)$report->omset : 0.0;
+                $dailyTrend[] = $report ? (float) $report->omset : 0.0;
             }
 
             $branchSummaries[] = (object) [
@@ -241,10 +241,34 @@ class BranchReportController extends Controller implements HasMiddleware
                 'edit_reason.min' => 'Alasan pengajuan edit data minimal 5 karakter.',
             ]);
 
-            $originalData = $branchReport->only(['branch_id', 'report_date', 'cash_setoran', 'qris_setoran', 'omset', 'portions_sold', 'notes']);
+            $originalData = [
+                'branch_id' => $branchReport->branch_id,
+                'report_date' => $branchReport->report_date ? date('Y-m-d', strtotime($branchReport->report_date)) : null,
+                'cash_setoran' => (float) $branchReport->cash_setoran,
+                'qris_setoran' => (float) $branchReport->qris_setoran,
+                'omset' => (float) $branchReport->omset,
+                'portions_sold' => (int) $branchReport->portions_sold,
+                'notes' => (string) $branchReport->notes,
+            ];
+
             $requestedData = $validated;
 
-            if ($originalData == $requestedData) {
+            $hasChanged = false;
+            foreach ($requestedData as $key => $val) {
+                $origVal = isset($originalData[$key]) ? (string) $originalData[$key] : '';
+                $reqVal = $val !== null ? (string) $val : '';
+                if ($key === 'cash_setoran' || $key === 'qris_setoran' || $key === 'omset') {
+                    if (abs((float) $origVal - (float) $reqVal) > 0.0001) {
+                        $hasChanged = true;
+                        break;
+                    }
+                } else if ($origVal !== $reqVal) {
+                    $hasChanged = true;
+                    break;
+                }
+            }
+
+            if (!$hasChanged) {
                 return back()->withErrors(['message' => 'Tidak ada perubahan data yang dideteksi.'])->withInput();
             }
 

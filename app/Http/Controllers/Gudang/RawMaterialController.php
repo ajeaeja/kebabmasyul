@@ -109,10 +109,33 @@ class RawMaterialController extends Controller implements HasMiddleware
                 'edit_reason.min' => 'Alasan pengajuan edit data minimal 5 karakter.',
             ]);
 
-            $originalData = $rawMaterial->only(['sku', 'name', 'stock', 'unit', 'safety_stock', 'status']);
+            $originalData = [
+                'sku' => (string)$rawMaterial->sku,
+                'name' => (string)$rawMaterial->name,
+                'stock' => (float)$rawMaterial->stock,
+                'unit' => (string)$rawMaterial->unit,
+                'safety_stock' => (float)$rawMaterial->safety_stock,
+                'status' => (string)$rawMaterial->status,
+            ];
+
             $requestedData = $validated;
 
-            if ($originalData == $requestedData) {
+            $hasChanged = false;
+            foreach ($requestedData as $key => $val) {
+                $origVal = isset($originalData[$key]) ? (string)$originalData[$key] : '';
+                $reqVal = $val !== null ? (string)$val : '';
+                if ($key === 'stock' || $key === 'safety_stock') {
+                    if (abs((float)$origVal - (float)$reqVal) > 0.0001) {
+                        $hasChanged = true;
+                        break;
+                    }
+                } else if ($origVal !== $reqVal) {
+                    $hasChanged = true;
+                    break;
+                }
+            }
+
+            if (!$hasChanged) {
                 return back()->withErrors(['message' => 'Tidak ada perubahan data yang dideteksi.'])->withInput();
             }
 
